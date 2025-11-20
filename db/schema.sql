@@ -47,7 +47,7 @@ CREATE TABLE Owns (
     FOREIGN KEY (LLID) REFERENCES Landlord(LLID)
 );
 
--- test comment
+-- test commit comment to see if my github is working
 
 CREATE TABLE LeasesFrom (
 	SSN VARCHAR(11) PRIMARY KEY NOT NULL,
