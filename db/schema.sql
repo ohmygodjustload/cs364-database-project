@@ -1,1 +1,56 @@
--- Create tables/relationships
+USE rogers9879;
+
+-- Create Tables
+CREATE TABLE Property (
+	PID INT AUTO_INCREMENT,
+    Price NUMERIC(6, 2),
+    Bed INT,
+    Bath DOUBLE,
+    PetsAllowed BOOLEAN,
+    Available BOOLEAN,
+    Address varchar(255),
+    PRIMARY KEY (PID)
+);
+
+CREATE TABLE Tenant (
+	SSN VARCHAR(11) PRIMARY KEY NOT NULL,
+    FName NVARCHAR(50) NOT NULL,
+    MName NVARCHAR(50),
+    LName NVARCHAR(50) NOT NULL,
+    Budget DOUBLE,
+    PhoneNum VARCHAR(20) NOT NULL,
+    Email VARCHAR(255) NOT NULL,
+    BirthDate DATE
+);
+
+CREATE TABLE Landlord (
+	LLID INT AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    PhoneNum VARCHAR(20) NOT NULL,
+    Email VARCHAR(255) NOT NULL,
+    TotalProperties INT,
+    PRIMARY KEY (LLID)
+);
+
+-- Create Relationships
+CREATE TABLE LivesIn (
+	SSN VARCHAR(11) PRIMARY KEY NOT NULL,
+    PID INT NOT NULL,
+    FOREIGN KEY (SSN) REFERENCES Tenant(SSN),
+    FOREIGN KEY (PID) REFERENCES Property(PID)
+);
+
+CREATE TABLE Owns (
+	PID INT PRIMARY KEY NOT NULL,
+    LLID INT NOT NULL,
+    FOREIGN KEY (PID) REFERENCES Property(PID),
+    FOREIGN KEY (LLID) REFERENCES Landlord(LLID)
+);
+
+CREATE TABLE LeasesFrom (
+	SSN VARCHAR(11) PRIMARY KEY NOT NULL,
+    LLID INT NOT NULL,
+    RentAgreement VARCHAR(255),
+    FOREIGN KEY (SSN) REFERENCES Tenant(SSN),
+    FOREIGN KEY (LLID) REFERENCES Landlord(LLID)
+);
