@@ -27,3 +27,6 @@ replay_pid*
 .classpath
 .settings/
 .metadata/
+
+# VSCode
+.vscode/
