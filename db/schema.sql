@@ -48,6 +48,7 @@ CREATE TABLE Owns (
 );
 
 -- test commit comment to see if my github is working.
+-- test 2 commit comment
 
 CREATE TABLE LeasesFrom (
 	SSN VARCHAR(11) PRIMARY KEY NOT NULL,
