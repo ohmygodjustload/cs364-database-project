@@ -2,14 +2,16 @@ USE rogers9879;
 
 -- Create Tables
 CREATE TABLE Property (
-	PID INT AUTO_INCREMENT,
+	PID INT NOT NULL AUTO_INCREMENT,
+    LLID INT NOT NULL,
     Price NUMERIC(6, 2),
     Bed INT,
     Bath DOUBLE,
     PetsAllowed BOOLEAN,
     Available BOOLEAN,
     Address varchar(255),
-    PRIMARY KEY (PID)
+    PRIMARY KEY (PID),
+    CONSTRAINT fk_property_landlord FOREIGN KEY (LLID) REFERENCES Landlord(LLID)
 );
 
 CREATE TABLE Tenant (
@@ -40,17 +42,22 @@ CREATE TABLE LivesIn (
     FOREIGN KEY (PID) REFERENCES Property(PID)
 );
 
-CREATE TABLE Owns (
-	PID INT PRIMARY KEY NOT NULL,
-    LLID INT NOT NULL,
-    FOREIGN KEY (PID) REFERENCES Property(PID),
-    FOREIGN KEY (LLID) REFERENCES Landlord(LLID)
-);
+-- drop table Owns;
 
+-- CREATE TABLE Owns (
+-- 	PID INT PRIMARY KEY NOT NULL,
+--     LLID INT NOT NULL,
+--     FOREIGN KEY (PID) REFERENCES Property(PID),
+--     FOREIGN KEY (LLID) REFERENCES Landlord(LLID)
+-- );
+
+-- drop table LeasesFrom;
 
 CREATE TABLE LeasesFrom (
-	SSN VARCHAR(11) PRIMARY KEY NOT NULL,
+	SSN VARCHAR(11) NOT NULL,
+    PID INT NOT NULL,
     LLID INT NOT NULL,
+    PRIMARY KEY (SSN, PID),
     RentAgreement VARCHAR(255),
     FOREIGN KEY (SSN) REFERENCES Tenant(SSN),
     FOREIGN KEY (LLID) REFERENCES Landlord(LLID)
