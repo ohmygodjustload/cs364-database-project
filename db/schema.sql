@@ -17,7 +17,6 @@ CREATE TABLE Property (
     Bath DOUBLE,
     PetsAllowed BOOLEAN,
     Address varchar(255),
-    Amenities varchar(255),
     PRIMARY KEY (PID),
     CONSTRAINT fk_property_landlord FOREIGN KEY (LLID) REFERENCES Landlord(LLID)
 );
