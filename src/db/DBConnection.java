@@ -7,9 +7,7 @@
  */
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Properties;
 
 public class DBConnection {
@@ -67,6 +65,12 @@ public class DBConnection {
         return "jdbc:mysql://" + url + "?user=" + user + "&password=" + pass;
     }
 
+    public ResultSet runQuery(String query) throws SQLException {
+        PreparedStatement stmt = connection.prepareStatement(query);
+        ResultSet results = stmt.executeQuery();
+        return results;
+    }
+
     /**
      * A simple test method to verify database connection functionality.
      * @param args Command line arguments (not used).
@@ -81,6 +85,16 @@ public class DBConnection {
             System.out.println("Connection failed:");
             e.printStackTrace();
         }
+
+        try {
+            ResultSet results = db.runQuery("SELECT * FROM Landlord;");
+            while (results.next()) {
+                System.out.println("LLID: " + results.getString("LLID") + ", Name: " + results.getString("Name")+ ", Phone: " + results.getString("PhoneNum") + ", Email: " + results.getString("Email"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
 
         try {
             db.disconnect();
