@@ -1,3 +1,3 @@
-db.url=
-db.user=
-db.pass=
+db.url=jdbc:mysql://host:port/DBName
+db.user=yourusername
+db.pass=yourpassword
