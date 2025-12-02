@@ -31,3 +31,6 @@ replay_pid*
 # VSCode
 .vs/
 .vscode/
+
+# Tmp Files
+**/tmp
