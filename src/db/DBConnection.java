@@ -1,6 +1,6 @@
 /**
- * A class to instantiate a connection to the database using JDBC.
- * Also implements the Singleton design pattern to ensure only one connection instance exists.
+ * A class to instantiate a connection to the database using JDBC. Implements the Singleton design pattern 
+ * to ensure only one connection instance exists, and provides methods to connect and disconnect from the database.
  * 
  * @author Andrew Peirce
  * Date Last Modified: December 2, 2025
@@ -13,12 +13,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DBConnection {
-    /* Load JDBC
-     * Query database
-     * Disconnect from database
-     */
-
-
     private String url = getCredentials();
 
     private Connection connection;
@@ -28,18 +22,34 @@ public class DBConnection {
 
     private DBConnection() { }
 
+    /**
+     * Get the singleton instance of DBConnection.
+     * @return The singleton DBConnection instance.
+     */
     public static DBConnection getInstance() {
         return INSTANCE;
     }
 
+    /**
+     * Connect to the database using the provided JDBC URL.
+     * @throws SQLException if a database access error occurs
+     */
     public void connect() throws SQLException {
         connection = DriverManager.getConnection(url);
     }
 
+    /**
+     * Disconnect from the database.
+     * @throws SQLException if a database access error occurs
+     */
     public void disconnect() throws SQLException {
         connection.close();
     }
 
+    /**
+     * A helper method to read JDBC credentials from a properties file.
+     * @return A formatted JDBC URL string.
+     */
     private String getCredentials() {
         String url = "", user = "", pass = "";
 
@@ -57,6 +67,10 @@ public class DBConnection {
         return "jdbc:mysql://" + url + "?user=" + user + "&password=" + pass;
     }
 
+    /**
+     * A simple test method to verify database connection functionality.
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         DBConnection db = DBConnection.getInstance();
         
@@ -76,7 +90,4 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
-
-
-
 }
