@@ -32,5 +32,8 @@ replay_pid*
 .vs/
 .vscode/
 
-# Tmp Files
+# Tmp files
 **/tmp
+
+# Sensitive login info
+config/db.properties
