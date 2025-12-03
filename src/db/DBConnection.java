@@ -8,7 +8,15 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
+import java.util.Set;
 
 public class DBConnection {
     private String url = getCredentials();
@@ -86,15 +94,73 @@ public class DBConnection {
             e.printStackTrace();
         }
 
+        List<Property> properties = new ArrayList<>(); // To statically hold all properties from DB
+        List<Tenant> tenants = new ArrayList<>(); // To statically hold all tenants from DB
+
         try {
-            ResultSet results = db.runQuery("SELECT * FROM Landlord;");
-            while (results.next()) {
-                System.out.println("LLID: " + results.getString("LLID") + ", Name: " + results.getString("Name")+ ", Phone: " + results.getString("PhoneNum") + ", Email: " + results.getString("Email"));
-            }
+
+            // Populate properties list
+            ResultSet results = db.runQuery("SELECT * FROM Property;"); // Fetch all properties
+            while (results.next()) 
+                properties.add(new Property(
+                    results.getInt("PID"),
+                    results.getInt("LLID"),
+                    results.getDouble("Price"),
+                    results.getInt("Bed"),
+                    results.getDouble("Bath"),
+                    results.getBoolean("PetsAllowed"),
+                    results.getString("Address"))
+                );
+
+            // Populate tenants list
+            results = db.runQuery("SELECT * FROM Tenant;");
+            while (results.next()) 
+                tenants.add(new Tenant(
+                    results.getString("SSN"),
+                    results.getString("Fname"),
+                    results.getString("Mname"),
+                    results.getString("Lname"),
+                    results.getDouble("Budget"),
+                    results.getString("PhoneNum"),
+                    results.getString("Email"),
+                    results.getDate("BirthDate").toLocalDate())
+                );
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        // Generate random occupancy mapping
+        Map<Property, List<Tenant>> occupancy = new HashMap<>(); // Map of Each Properties to its Tenants
+        Map<Property, Integer> propertyOccupancies = new HashMap<>(); // Map of each property's max generated occupancy
+        Random rand = new Random();
+        
+        Set<Tenant> usedTenants = new HashSet<>(); // To avoid assigning the same tenant multiple times
+
+        // Initialize occupancy map
+        for (Property p : properties) {
+            occupancy.put(p, new ArrayList<>()); // Initialize empty tenant list for each property
+        }
+
+        // Determine target occupancy for each property
+        for (Property p : occupancy.keySet()) {
+            int capacity = p.getBed(); // max tenants = number of beds
+            int target = rand.nextInt(capacity + 1); // target occupancy between 0 and capacity
+
+            propertyOccupancies.put(p, target);
+        }
+
+        Collections.shuffle(tenants); // Shuffle tenants to ensure random assignment
+
+        // System.out.println("Properties:");
+        // for (Property p : properties) {
+        //     System.out.println(p);
+        // }
+
+        // System.out.println("\nTenants:");
+        // for (Tenant t : tenants) {
+        //     System.out.println(t);
+        // }
 
         try {
             db.disconnect();
