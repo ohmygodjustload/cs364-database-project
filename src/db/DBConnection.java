@@ -8,15 +8,7 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class DBConnection {
     private String url = getCredentials();
@@ -81,6 +73,7 @@ public class DBConnection {
 
     /**
      * A simple test method to verify database connection functionality.
+     * Also generates LivesIn relationships between Tenants and Properties and inserts them into the database.
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
@@ -212,7 +205,7 @@ public class DBConnection {
         // System.out.println("Total tenants assigned: " + assignedCount);
         // System.out.println("Total tenants overall: " + tenants.size());
 
-        // TODO: Prepare and execute INSERT statements to populate LivesIn and LeasesFrom tables based on occupancy mapping
+        // Insert LivesIn relationships into the database
         String sql = "INSERT INTO LivesIn (SSN, PID) VALUES (? , ?)";
 
         try (PreparedStatement stmt = db.connection.prepareStatement(sql)) {
