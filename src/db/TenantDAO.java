@@ -1,3 +1,9 @@
+/**
+ * Data Access Object (DAO) for Tenant entities.
+ * 
+ * @author Andrew Peirce
+ * Date Last Modified: December 4, 2025
+ */
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,3 +1,10 @@
+/**
+ * Data Access Object (DAO) class for Property entities.
+ * 
+ * @author Andrew Peirce
+ * Date Last Modified: December 4, 2025
+ */
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,6 +13,8 @@ public class PropertyDAO {
 
     public List<Property> getAllProperties() {
         // Implementation here
+        List<Property> properties = new ArrayList<>();
+        
         return new ArrayList<>();
     }
 

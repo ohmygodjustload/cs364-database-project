@@ -43,6 +43,13 @@ public class DBConnection {
     public void disconnect() throws SQLException {
         connection.close();
     }
+    /**
+     * Get the current database connection.
+     * @return The current database connection.
+     */
+    public Connection getConnection() {
+        return connection;
+    }
 
     /**
      * A helper method to read JDBC credentials from a properties file.
@@ -196,7 +203,6 @@ public class DBConnection {
         // for (Tenant t : unassignedTenants) {
         //     System.out.println(t);
         // }
-
         // Count total assigned tenants 
         // int assignedCount = 0;
         // for (Property p : occupancy.keySet()) {
