@@ -152,10 +152,10 @@ public class DBConnection {
         }
 
         // Print each property with its generated target occupancy
-        System.out.println("Generated Property Target Occupancies:");
-        for (Property p : propertyOccupancies.keySet()) {
-            System.out.println("Property " + p.getPID() + " target occupancy: " + propertyOccupancies.get(p));
-        }
+        // System.out.println("Generated Property Target Occupancies:");
+        // for (Property p : propertyOccupancies.keySet()) {
+        //     System.out.println("Property " + p.getPID() + " target occupancy: " + propertyOccupancies.get(p));
+        // }
 
         Collections.shuffle(tenants); // Shuffle tenants to ensure random assignment
 
@@ -163,6 +163,8 @@ public class DBConnection {
         // for (Property p : properties) {
         //     System.out.println(p);
         // }
+
+        // Assign tenants to properties based on target occupancy
         int tenantIndex = 0;
         for (Property p : properties) {
             int slots = propertyOccupancies.get(p);
@@ -181,37 +183,53 @@ public class DBConnection {
         }
 
         // Print occupancy mapping
-        System.out.println("\nOccupancy Mapping (Property -> Tenants):");
-        for (Property p : occupancy.keySet()) {
-            System.out.println(p);
-            List<Tenant> tenantList = occupancy.get(p);
-            for (Tenant t : tenantList) {
-                System.out.println("  - " + t);
-            }
-        }
+        // System.out.println("\nOccupancy Mapping (Property -> Tenants):");
+        // for (Property p : occupancy.keySet()) {
+        //     System.out.println(p);
+        //     List<Tenant> tenantList = occupancy.get(p);
+        //     for (Tenant t : tenantList) {
+        //         System.out.println("  - " + t);
+        //     }
+        // }
 
         // Print tenants who were not assigned
-        List<Tenant> unassignedTenants = new ArrayList<>();
-        for (Tenant t : tenants) {
-            if (!usedTenants.contains(t)) {
-                unassignedTenants.add(t);
-            }
-        }
-        System.out.println("\nUnassigned Tenants:");
-        for (Tenant t : unassignedTenants) {
-            System.out.println(t);
-        }
+        // List<Tenant> unassignedTenants = new ArrayList<>();
+        // for (Tenant t : tenants) {
+        //     if (!usedTenants.contains(t)) {
+        //         unassignedTenants.add(t);
+        //     }
+        // }
+        // System.out.println("\nUnassigned Tenants:");
+        // for (Tenant t : unassignedTenants) {
+        //     System.out.println(t);
+        // }
 
-        
-        int assignedCount = 0;
-        // Count total assigned tenants
-        for (Property p : occupancy.keySet()) {
-            assignedCount += occupancy.get(p).size();
-        }
-        System.out.println("Total tenants assigned: " + assignedCount);
-        System.out.println("Total tenants overall: " + tenants.size());
+        // Count total assigned tenants 
+        // int assignedCount = 0;
+        // for (Property p : occupancy.keySet()) {
+        //     assignedCount += occupancy.get(p).size();
+        // }
+        // System.out.println("Total tenants assigned: " + assignedCount);
+        // System.out.println("Total tenants overall: " + tenants.size());
 
         // TODO: Prepare and execute INSERT statements to populate LivesIn and LeasesFrom tables based on occupancy mapping
+        String sql = "INSERT INTO LivesIn (SSN, PID) VALUES (? , ?)";
+
+        try (PreparedStatement stmt = db.connection.prepareStatement(sql)) {
+            for (Property p : occupancy.keySet()) {
+                int pid = p.getPID();
+                for (Tenant t : occupancy.get(p)) {
+                    stmt.setString(1, t.getSSN());
+                    stmt.setInt(2, pid);
+                    stmt.executeUpdate();
+                }
+            }
+
+            System.out.println("LivesIn relationships inserted successfully.");
+        } catch (SQLException e) {
+            System.out.println("Failed to insert LivesIn relationships:");
+            e.printStackTrace();
+        }
 
         // System.out.println("\nTenants:");
         // for (Tenant t : tenants) {
