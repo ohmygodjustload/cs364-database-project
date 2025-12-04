@@ -37,8 +37,6 @@ public class Landlord {
         return "Landlord{" +
                 "LLID=" + LLID +
                 ", name='" + name + '\'' +
-                ", phoneNum='" + phoneNum + '\'' +
-                ", email='" + email + '\'' +
                 '}';
     }
 }

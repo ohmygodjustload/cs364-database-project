@@ -55,12 +55,7 @@ public class Property {
     public String toString() {
         return "Property{" +
                 "PID=" + PID +
-                ", LLID=" + LLID +
-                ", price=" + price +
                 ", bed=" + bed +
-                ", bath=" + bath +
-                ", petsAllowed=" + petsAllowed +
-                ", address='" + address + '\'' +
                 '}';
     }
 }

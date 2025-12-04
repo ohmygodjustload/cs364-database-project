@@ -63,12 +63,6 @@ public class Tenant {
         return "Tenant{" +
                 "SSN='" + SSN + '\'' +
                 ", Fname='" + Fname + '\'' +
-                ", Mname='" + Mname + '\'' +
-                ", Lname='" + Lname + '\'' +
-                ", budget=" + budget +
-                ", phoneNum='" + phoneNum + '\'' +
-                ", email='" + email + '\'' +
-                ", birthDate=" + birthDate +
                 '}';
     }
 }

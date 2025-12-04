@@ -133,6 +133,7 @@ public class DBConnection {
         // Generate random occupancy mapping
         Map<Property, List<Tenant>> occupancy = new HashMap<>(); // Map of Each Properties to its Tenants
         Map<Property, Integer> propertyOccupancies = new HashMap<>(); // Map of each property's max generated occupancy
+        
         Random rand = new Random();
         
         Set<Tenant> usedTenants = new HashSet<>(); // To avoid assigning the same tenant multiple times
@@ -150,12 +151,67 @@ public class DBConnection {
             propertyOccupancies.put(p, target);
         }
 
+        // Print each property with its generated target occupancy
+        System.out.println("Generated Property Target Occupancies:");
+        for (Property p : propertyOccupancies.keySet()) {
+            System.out.println("Property " + p.getPID() + " target occupancy: " + propertyOccupancies.get(p));
+        }
+
         Collections.shuffle(tenants); // Shuffle tenants to ensure random assignment
 
         // System.out.println("Properties:");
         // for (Property p : properties) {
         //     System.out.println(p);
         // }
+        int tenantIndex = 0;
+        for (Property p : properties) {
+            int slots = propertyOccupancies.get(p);
+
+            while (slots > 0 && tenantIndex < tenants.size()) {
+                Tenant t = tenants.get(tenantIndex);
+
+                if (!usedTenants.contains(t)) {
+                    occupancy.get(p).add(t);
+                    usedTenants.add(t);
+                    slots = slots - 1;
+                }
+
+                tenantIndex = tenantIndex + 1;
+            }
+        }
+
+        // Print occupancy mapping
+        System.out.println("\nOccupancy Mapping (Property -> Tenants):");
+        for (Property p : occupancy.keySet()) {
+            System.out.println(p);
+            List<Tenant> tenantList = occupancy.get(p);
+            for (Tenant t : tenantList) {
+                System.out.println("  - " + t);
+            }
+        }
+
+        // Print tenants who were not assigned
+        List<Tenant> unassignedTenants = new ArrayList<>();
+        for (Tenant t : tenants) {
+            if (!usedTenants.contains(t)) {
+                unassignedTenants.add(t);
+            }
+        }
+        System.out.println("\nUnassigned Tenants:");
+        for (Tenant t : unassignedTenants) {
+            System.out.println(t);
+        }
+
+        
+        int assignedCount = 0;
+        // Count total assigned tenants
+        for (Property p : occupancy.keySet()) {
+            assignedCount += occupancy.get(p).size();
+        }
+        System.out.println("Total tenants assigned: " + assignedCount);
+        System.out.println("Total tenants overall: " + tenants.size());
+
+        // TODO: Prepare and execute INSERT statements to populate LivesIn and LeasesFrom tables based on occupancy mapping
 
         // System.out.println("\nTenants:");
         // for (Tenant t : tenants) {
