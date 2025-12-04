@@ -4,11 +4,13 @@
  * Date Last Modified: December 1, 2025
  */
 public class Landlord {
-    private int LLID;
+    // Attributes
+    private int LLID; // Primary Key
     private String name;
     private String phoneNum;
     private String email;
 
+    // Constructor
     public Landlord(int LLID, String name, String phoneNum, String email) {
         this.LLID = LLID;
         this.name = name;
@@ -16,6 +18,7 @@ public class Landlord {
         this.email = email;
     }
 
+    // Getters
     public int getLLID() {
         return LLID;
     }
@@ -32,6 +35,24 @@ public class Landlord {
         return email;
     }
 
+    // Setters
+    public void setLLID(int LLID) {
+        this.LLID = LLID;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    // To String
     @Override
     public String toString() {
         return "Landlord{" +

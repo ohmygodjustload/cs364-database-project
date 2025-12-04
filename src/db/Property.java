@@ -5,8 +5,9 @@
  * Date Last Modified: December 1, 2025
  */
 public class Property {
-    private int PID;
-    private int LLID;
+    // Attributes
+    private int PID; // Primary Key
+    private int LLID; // Foreign Key
     private double price;
     private int bed;
     private double bath;
@@ -23,6 +24,7 @@ public class Property {
         this.address = address;
     }
 
+    // Getters
     public int getPID() {
         return PID;
     }
@@ -51,6 +53,36 @@ public class Property {
         return address;
     }
 
+    // Setters
+    public void setPID(int PID) {
+        this.PID = PID;
+    }
+
+    public void setLLID(int LLID) {
+        this.LLID = LLID;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setBed(int bed) {
+        this.bed = bed;
+    }
+
+    public void setBath(double bath) {
+        this.bath = bath;
+    }
+
+    public void setPetsAllowed(boolean petsAllowed) {
+        this.petsAllowed = petsAllowed;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    // To String
     @Override
     public String toString() {
         return "Property{" +
