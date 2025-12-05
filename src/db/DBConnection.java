@@ -29,11 +29,13 @@ public class DBConnection {
     }
 
     /**
-     * Connect to the database using the provided JDBC URL.
+     * Connect to the database.
      * @throws SQLException if a database access error occurs
      */
     public void connect() throws SQLException {
-        connection = DriverManager.getConnection(url);
+        if (connection == null || connection.isClosed()) {
+            connection = DriverManager.getConnection(url);
+        }
     }
 
     /**
@@ -41,7 +43,9 @@ public class DBConnection {
      * @throws SQLException if a database access error occurs
      */
     public void disconnect() throws SQLException {
-        connection.close();
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
     }
     /**
      * Get the current database connection.
