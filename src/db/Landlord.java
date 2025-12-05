@@ -18,6 +18,14 @@ public class Landlord {
         this.email = email;
     }
 
+    // Overloaded Constructor without LLID (for inserts)
+    public Landlord(String name, String phoneNum, String email) {
+        // this.LLID = LLID;
+        this.name = name;
+        this.phoneNum = phoneNum;
+        this.email = email;
+    }
+
     // Getters
     public int getLLID() {
         return LLID;
