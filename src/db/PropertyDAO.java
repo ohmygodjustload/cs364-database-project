@@ -79,8 +79,6 @@ public class PropertyDAO {
         stmt.setBoolean(5, p.isPetsAllowed());
         stmt.setString(6, p.getAddress());
         stmt.executeUpdate();
-
-        
     }
 
     public void updateProperty(Property p) throws SQLException {
