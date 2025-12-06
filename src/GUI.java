@@ -1,6 +1,4 @@
 import java.sql.SQLException;
-
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,7 +28,6 @@ public class GUI {
     public static void main(String[] args) {
         try {
             DBConnection.getInstance().connect();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

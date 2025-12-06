@@ -1,5 +1,3 @@
-package db;
-
 /**
  * A POJO class representing a Landlord entity.
  * @author Andrew Peirce
