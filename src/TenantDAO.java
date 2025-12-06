@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+// import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,4 +134,14 @@ public class TenantDAO {
             conn.setAutoCommit(originalAutoCommit);
         }
     }
+
+    // public static void main(String[] args) {
+    //     try {
+    //         DBConnection.getInstance().connect();
+    //         new TenantDAO().insertTenant(new Tenant("000-00-0000", "John", "Andrew", "Doe", 1000.0, "123-456-7890", "john.doe@example.com", LocalDate.of(1990, 1, 1)));
+    //         System.out.println("Inserted tenant successfully.");
+    //     } catch (SQLException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }

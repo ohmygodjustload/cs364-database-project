@@ -123,4 +123,19 @@ public class LandlordDAO {
             conn.setAutoCommit(originalAutoCommit);
         }
     }
+
+    // public static void main(String[] args) {
+    //     try {
+    //         DBConnection.getInstance().connect();
+    //         LandlordDAO landlordDAO = new LandlordDAO();
+
+    //         // Example usage: Insert a new landlord
+    //         // Landlord newLandlord = new Landlord("TEST-LANDLORD", "123-555-1234", "alice.smith@example.com");
+    //         // landlordDAO.insertLandlord(newLandlord);
+    //         // landlordDAO.deleteLandlord(47);
+    //         // System.out.println("Deleted landlord successfully.");
+    //     } catch (SQLException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }

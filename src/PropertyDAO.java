@@ -136,14 +136,14 @@ public class PropertyDAO {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            DBConnection.getInstance().connect();
-            new PropertyDAO().insertProperty(new Property(1, 1, 2375.00, 5, 2, true, "2120 Vine St La Crosse WI"));
-            System.out.println("Inserted property successfully.");
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    // public static void main(String[] args) {
+    //     try {
+    //         DBConnection.getInstance().connect();
+    //         new PropertyDAO().insertProperty(new Property(47, 1600.0, 4, 2, true, "124 Heck St, Anytown, USA"));
+    //         System.out.println("Inserted property successfully.");
+    //     } catch (SQLException e) {
+    //         // TODO Auto-generated catch block
+    //         e.printStackTrace();
+    //     }
+    // }
 }
