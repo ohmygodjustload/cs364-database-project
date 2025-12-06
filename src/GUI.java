@@ -1,5 +1,3 @@
-package gui;
-
 import java.sql.SQLException;
 import java.util.List;
 
