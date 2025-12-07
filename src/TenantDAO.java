@@ -2,7 +2,7 @@
  * Data Access Object (DAO) for Tenant entities.
  * 
  * @author Andrew Peirce
- * Date Last Modified: December 4, 2025
+ * Date Last Modified: December 7, 2025
  */
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,90 +13,127 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TenantDAO {
-    private final DBConnection db;
+
+    private final DBConnection db; // Singleton DB connection instance
 
     public TenantDAO() {
-        db = DBConnection.getInstance();
+        db = DBConnection.getInstance(); // Initialize DB connection
     }
     
-    // TODO: Implement methods for Tenant data access
-
+    /**
+     * Retrieve all tenants from the database.
+     * @return List of all Tenant objects
+     * @throws SQLException
+     */
     public List<Tenant> getAllTenants() throws SQLException {
-        PreparedStatement stmt = db.getConnection().prepareStatement("SELECT * FROM Tenant");
+        String sql = "SELECT * FROM Tenant";
         List<Tenant> tenants = new ArrayList<>();
-        ResultSet results = stmt.executeQuery();
 
-        while (results.next()) {
-            tenants.add(new Tenant(
-                results.getString("SSN"),
-                results.getString("FName"),
-                results.getString("MName"),
-                results.getString("LName"),
-                results.getDouble("Budget"),
-                results.getString("PhoneNum"),
-                results.getString("Email"),
-                results.getDate("BirthDate").toLocalDate()
-            ));
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                tenants.add(new Tenant(
+                    results.getString("SSN"),
+                    results.getString("FName"),
+                    results.getString("MName"),
+                    results.getString("LName"),
+                    results.getDouble("Budget"),
+                    results.getString("PhoneNum"),
+                    results.getString("Email"),
+                    results.getDate("BirthDate").toLocalDate()
+                ));
+            }
         }
         
         return tenants;
     }
 
+    /**
+     * Retrieve a tenant by their SSN.
+     * @param ssn Tenant's SSN
+     * @return Tenant object or null if not found
+     * @throws SQLException
+     */
     public Tenant getTenantBySSN(String ssn) throws SQLException {
-        PreparedStatement stmt = db.getConnection().prepareStatement("SELECT * FROM Tenant WHERE SSN = ?");
+        String sql = "SELECT * FROM Tenant WHERE SSN = ?";
         Tenant tenant = null;
-        stmt.setString(1, ssn);
-        ResultSet results = stmt.executeQuery();
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+        ) {
+            stmt.setString(1, ssn);
 
-        if (results.next()) {
-            tenant = new Tenant(
-                results.getString("SSN"),
-                results.getString("FName"),
-                results.getString("MName"),
-                results.getString("LName"),
-                results.getDouble("Budget"),
-                results.getString("PhoneNum"),
-                results.getString("Email"),
-                results.getDate("BirthDate").toLocalDate()
-            );
+            try (ResultSet results = stmt.executeQuery();) {
+                if (results.next()) {
+                    tenant = new Tenant(
+                        results.getString("SSN"),
+                        results.getString("FName"),
+                        results.getString("MName"),
+                        results.getString("LName"),
+                        results.getDouble("Budget"),
+                        results.getString("PhoneNum"),
+                        results.getString("Email"),
+                        results.getDate("BirthDate").toLocalDate()
+                    );
+                }
+            }
         }
         
         return tenant;
     }
 
+    /**
+     * Insert a new tenant into the database.
+     * @param t Tenant object to insert
+     * @throws SQLException
+     */
     public void insertTenant(Tenant t) throws SQLException {
-        PreparedStatement stmt = db.getConnection().prepareStatement(
-            "INSERT INTO Tenant (SSN, FName, MName, LName, Budget, PhoneNum, Email, BirthDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        );
-        
-        stmt.setString(1, t.getSSN());
-        stmt.setString(2, t.getFname());
-        stmt.setString(3, t.getMname());
-        stmt.setString(4, t.getLname());
-        stmt.setDouble(5, t.getBudget());
-        stmt.setString(6, t.getPhoneNum());
-        stmt.setString(7, t.getEmail());
-        stmt.setDate(8, java.sql.Date.valueOf(t.getBirthDate()));
-        stmt.executeUpdate();
+        String sql = "INSERT INTO Tenant (SSN, FName, MName, LName, Budget, PhoneNum, Email, BirthDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+        ) {
+            stmt.setString(1, t.getSSN());
+            stmt.setString(2, t.getFname());
+            stmt.setString(3, t.getMname());
+            stmt.setString(4, t.getLname());
+            stmt.setDouble(5, t.getBudget());
+            stmt.setString(6, t.getPhoneNum());
+            stmt.setString(7, t.getEmail());
+            stmt.setDate(8, java.sql.Date.valueOf(t.getBirthDate()));
+            stmt.executeUpdate();
+        }
     }   
 
+    /**
+     * Update an existing tenant in the database.
+     * @param t Tenant object with updated values
+     * @throws SQLException
+     */
     public void updateTenant(Tenant t) throws SQLException {
-        PreparedStatement stmt = db.getConnection().prepareStatement(
-            "UPDATE Tenant SET FName = ?, MName = ?, LName = ?, Budget = ?, PhoneNum = ?, Email = ?, BirthDate = ? WHERE SSN = ?"
-        );
-
-        stmt.setString(1, t.getFname());
-        stmt.setString(2, t.getMname());
-        stmt.setString(3, t.getLname());
-        stmt.setDouble(4, t.getBudget());
-        stmt.setString(5, t.getPhoneNum());
-        stmt.setString(6, t.getEmail());
-        stmt.setDate(7, java.sql.Date.valueOf(t.getBirthDate()));
-        stmt.setString(8, t.getSSN());
-        stmt.executeUpdate();
+        String sql = "UPDATE Tenant SET FName = ?, MName = ?, LName = ?, Budget = ?, PhoneNum = ?, Email = ?, BirthDate = ? WHERE SSN = ?";
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+        ) {
+            stmt.setString(1, t.getFname());
+            stmt.setString(2, t.getMname());
+            stmt.setString(3, t.getLname());
+            stmt.setDouble(4, t.getBudget());
+            stmt.setString(5, t.getPhoneNum());
+            stmt.setString(6, t.getEmail());
+            stmt.setDate(7, java.sql.Date.valueOf(t.getBirthDate()));
+            stmt.setString(8, t.getSSN());
+            stmt.executeUpdate();
+        }
     }
 
+    /**
+     * Delete a tenant from the database.
+     * @param ssn Tenant's SSN
+     * @throws SQLException
+     */
     public void deleteTenant(String ssn) throws SQLException {
+        // To maintain referential integrity, delete related records first
         String deleteFromLivesIn = "DELETE FROM LivesIn WHERE SSN = ?";
         String deleteFromLeasesFrom = "DELETE FROM LeasesFrom WHERE SSN = ?";
         String deleteTenant = "DELETE FROM Tenant WHERE SSN = ?";

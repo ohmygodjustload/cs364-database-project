@@ -2,7 +2,7 @@
  * Data Access Object (DAO) class for Property entities.
  * 
  * @author Andrew Peirce
- * Date Last Modified: December 4, 2025
+ * Date Last Modified: December 7, 2025
  */
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,88 +13,151 @@ import java.util.List;
 
 public class PropertyDAO {
 
-    private final DBConnection db;
+    private final DBConnection db; // Singleton DB connection instance
 
     public PropertyDAO() {
-        db = DBConnection.getInstance();
+        db = DBConnection.getInstance(); // Initialize DB connection
     }
 
-    // TODO: Implement methods for Property data access
-
+    /**
+     * Retrieve all properties from the database.
+     * @return List of all Property objects
+     * @throws SQLException
+     */
     public List<Property> getAllProperties() throws SQLException {
         // Process results and populate properties list
-        PreparedStatement stmt = db.getConnection().prepareStatement("SELECT * FROM Property");
+        String sql = "SELECT * FROM Property";
         List<Property> properties = new ArrayList<>();
-        ResultSet results = stmt.executeQuery();
 
-        while (results.next()) {
-            properties.add(new Property(
-                results.getInt("PID"),
-                results.getInt("LLID"),
-                results.getDouble("price"),
-                results.getInt("bed"),
-                results.getDouble("bath"),
-                results.getBoolean("petsAllowed"),
-                results.getString("address")
-            ));
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                properties.add(new Property(
+                    results.getInt("PID"),
+                    results.getInt("LLID"),
+                    results.getDouble("price"),
+                    results.getInt("bed"),
+                    results.getDouble("bath"),
+                    results.getBoolean("petsAllowed"),
+                    results.getString("address")
+                ));
+            }
         }
 
         return properties;
     }
 
+    /**
+     * Retrieve a property by its PID.
+     * @param PID Property ID
+     * @return Property object or null if not found
+     * @throws SQLException
+     */
     public Property getPropertyByID(int PID) throws SQLException {
-        PreparedStatement stmt = db.getConnection().prepareStatement("SELECT * FROM Property WHERE PID = ?");
+        String sql = "SELECT * FROM Property WHERE PID = ?";
         Property property = null;
-        stmt.setInt(1, PID);
-        ResultSet results = stmt.executeQuery();
-        if (results.next()) {
-            property = new Property(
-                results.getInt("PID"),
-                results.getInt("LLID"),
-                results.getDouble("price"),
-                results.getInt("bed"),
-                results.getDouble("bath"),
-                results.getBoolean("petsAllowed"),
-                results.getString("address")
-            );
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+        ) {
+            stmt.setInt(1, PID);
+            try (ResultSet results = stmt.executeQuery();) {
+                if (results.next()) {
+                    property = new Property(
+                        results.getInt("PID"),
+                        results.getInt("LLID"),
+                        results.getDouble("Price"),
+                        results.getInt("Bed"),
+                        results.getDouble("Bath"),
+                        results.getBoolean("PetsAllowed"),
+                        results.getString("Address")
+                    );
+                }
+            }
         }
 
         return property;
     }
 
-    public List<Property> getPropertiesByLandlordID(int LLID) {
-        // Implementation here
-        return new ArrayList<>();
+    /**
+     * Retrieve all properties owned by a specific landlord.
+     * @param LLID Landlord ID
+     * @return List of Property objects owned by the landlord
+     * @throws SQLException
+     */
+    public List<Property> getPropertiesByLandlordID(int LLID) throws SQLException {
+        String sql = "SELECT * FROM Property WHERE LLID = ?";
+        List<Property> properties = new ArrayList<>();
+        
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+        ) {
+            stmt.setInt(1, LLID);
+            try (ResultSet results = stmt.executeQuery();) {
+                while (results.next()) {
+                    properties.add(new Property(
+                        results.getInt("PID"),
+                        results.getInt("LLID"),
+                        results.getDouble("Price"),
+                        results.getInt("Bed"),
+                        results.getDouble("Bath"),
+                        results.getBoolean("PetsAllowed"),
+                        results.getString("Address")
+                    ));
+                }
+            }
+        }
+
+        return properties;
     }
 
+    /**
+     * Insert a new property into the database.
+     * @param p Property object to insert
+     * @throws SQLException
+     */
     public void insertProperty(Property p) throws SQLException {
-        // Implementation here
-        PreparedStatement stmt = db.getConnection().prepareStatement(
-            "INSERT INTO Property (LLID, Price, Bed, Bath, PetsAllowed, Address) VALUES (?, ?, ?, ?, ?, ?)"
-        );
-        stmt.setInt(1, p.getLLID());
-        stmt.setDouble(2, p.getPrice());
-        stmt.setInt(3, p.getBed());
-        stmt.setDouble(4, p.getBath());
-        stmt.setBoolean(5, p.isPetsAllowed());
-        stmt.setString(6, p.getAddress());
-        stmt.executeUpdate();
+        String sql = "INSERT INTO Property (LLID, Price, Bed, Bath, PetsAllowed, Address) VALUES (?, ?, ?, ?, ?, ?)";
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+        ) {
+            stmt.setInt(1, p.getLLID());
+            stmt.setDouble(2, p.getPrice());
+            stmt.setInt(3, p.getBed());
+            stmt.setDouble(4, p.getBath());
+            stmt.setBoolean(5, p.isPetsAllowed());
+            stmt.setString(6, p.getAddress());
+            stmt.executeUpdate();
+        }
     }
 
+    /**
+     * Update an existing property in the database.
+     * @param p Property object with updated values
+     * @throws SQLException
+     */
     public void updateProperty(Property p) throws SQLException {
-        PreparedStatement stmt = db.getConnection().prepareStatement(
-            "UPDATE Property SET Price=?, Bed=?, Bath=?, PetsAllowed=?, Address=? WHERE PID=?"
-        );
-
-        stmt.setDouble(1, p.getPrice());
-        stmt.setInt(2, p.getBed());
-        stmt.setDouble(3, p.getBath());
-        stmt.setBoolean(4, p.isPetsAllowed());
-        stmt.setString(5, p.getAddress());
-        stmt.setInt(6, p.getPID());
-        stmt.executeUpdate();
+        String sql = "UPDATE Property SET Price=?, Bed=?, Bath=?, PetsAllowed=?, Address=? WHERE PID=?";
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+        ) {
+            stmt.setDouble(1, p.getPrice());
+            stmt.setInt(2, p.getBed());
+            stmt.setDouble(3, p.getBath());
+            stmt.setBoolean(4, p.isPetsAllowed());
+            stmt.setString(5, p.getAddress());
+            stmt.setInt(6, p.getPID());
+            stmt.executeUpdate();
+        }
     }
 
+    /**
+     * Delete a property from the database.
+     * @param PID Property ID
+     * @throws SQLException
+     */
     public void deleteProperty(int PID) throws SQLException {
         String deleteLivesIn = "DELETE FROM LivesIn WHERE PID = ?";
         String deleteLeases = "DELETE FROM LeasesFrom WHERE PID = ?";
