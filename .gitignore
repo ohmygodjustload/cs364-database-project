@@ -40,3 +40,4 @@ config/db.properties
 
 # SQL junk
 *.bak
+*.mwb
