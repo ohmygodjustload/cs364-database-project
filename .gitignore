@@ -37,3 +37,6 @@ replay_pid*
 
 # Sensitive login info
 config/db.properties
+
+# SQL junk
+*.bak
