@@ -1,3 +1,15 @@
+/**
+ * This class seeds LivesIn relationships between Tenants and Properties into the database.
+ * 
+ * @author Andrew Peirce
+ * Date Last Modified: December 4, 2025
+ */
+package util;
+import dao.PropertyDAO;
+import dao.TenantDAO;
+import model.Property;
+import model.Tenant;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,15 +20,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-/**
- * This class seeds LivesIn relationships between Tenants and Properties into the database.
- * 
- * @author Andrew Peirce
- * Date Last Modified: December 4, 2025
- */
-
 public class DataSeeder {
 
+
+    // TODO - change this class such that LeasesFrom are derived in the same method as LivesIn to ensure consistency
     public void seedLivesInRelationships() {
         // Implementation here
         List<Tenant> tenants = null;
@@ -71,6 +78,7 @@ public class DataSeeder {
 
     }
 
+    // TODO - implement this method
     public void seedLeasesFromRelationships() {
         // Implementation here
 

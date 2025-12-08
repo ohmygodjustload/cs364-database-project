@@ -3,6 +3,8 @@
  * @author Andrew Peirce
  * Date Last Modified: December 1, 2025
  */
+package model;
+
 public class Landlord {
     // Attributes
     private int LLID; // Primary Key

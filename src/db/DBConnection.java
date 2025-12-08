@@ -5,6 +5,8 @@
  * @author Andrew Peirce
  * Date Last Modified: December 2, 2025
  */
+package db;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;

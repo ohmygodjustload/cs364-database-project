@@ -4,6 +4,10 @@
  * @author Andrew Peirce
  * Date Last Modified: December 7, 2025
  */
+package dao;
+
+import db.DBConnection;
+import model.Landlord;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

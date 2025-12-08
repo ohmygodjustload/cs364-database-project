@@ -5,6 +5,16 @@
  * @author Andrew Peirce
  * Date Last Modified: December 7, 2025
  */
+package gui;
+
+import dao.LandlordDAO;
+import dao.PropertyDAO;
+import dao.TenantDAO;
+import db.DBConnection;
+import model.Property;
+import model.Tenant;
+import model.Landlord;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;

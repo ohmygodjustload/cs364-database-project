@@ -4,6 +4,8 @@
  * @author Andrew Peirce
  * Date Last Modified: December 1, 2025
  */
+package model;
+
 public class Property {
     // Attributes
     private int PID; // Primary Key
