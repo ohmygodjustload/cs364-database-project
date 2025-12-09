@@ -39,7 +39,7 @@ public class GUI {
         landlordDAO = new LandlordDAO();
 
         initUI();
-        loadAllProperties();
+        // loadAllProperties();
     }
 
     private void initUI() {
