@@ -23,8 +23,9 @@ import java.util.List;
 public class GUI {
 
     private JFrame frame;
-    private JTable propertyTable;
+    private JTable mainTable;
     private DefaultTableModel tableModel;
+    private boolean isTenantView = false;
 
     // DAOs for database access
     private PropertyDAO propertyDAO;
@@ -56,8 +57,8 @@ public class GUI {
         tableModel = new DefaultTableModel(
             new Object[]{"PID", "Address", "Beds", "Baths", "Price", "Pets"}, 0
         );
-        propertyTable = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(propertyTable);
+        mainTable = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(mainTable);
         frame.add(scrollPane, BorderLayout.CENTER);
 
         // Left Button Panel
@@ -98,6 +99,7 @@ public class GUI {
 
     // DAO Calls
     private void loadAllProperties() {
+        isTenantView = false;
         tableModel.setColumnIdentifiers(
             new Object[]{"PID", "Address", "Beds", "Baths", "Price", "Pets"}
         );
@@ -123,6 +125,7 @@ public class GUI {
     }
 
     private void loadAllTenants() {
+        isTenantView = true;
         tableModel.setColumnIdentifiers(
             new Object[]{"SSN", "First Name", "Last Name", "Budget", "Phone", "Email"}
         );
@@ -146,6 +149,10 @@ public class GUI {
     }
 
     private void runAddTenantDialog() {
+        if (!isTenantView) {
+            JOptionPane.showMessageDialog(frame, "Switch to Tenant view first.");
+            return;
+        }
         JTextField ssnField = new JTextField();
         JTextField fNameField = new JTextField();
         JTextField mNameField = new JTextField();
@@ -192,7 +199,12 @@ public class GUI {
     }
 
     private void runUpdateTenantDialog() {
-        int selectedRow = propertyTable.getSelectedRow();
+        if (!isTenantView) {
+            JOptionPane.showMessageDialog(frame, "Switch to Tenant view first.");
+            return;
+        }
+
+        int selectedRow = mainTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(frame, "Select a tenant first");
             return;
@@ -248,7 +260,12 @@ public class GUI {
     }
 
     private void deleteSelectedProperty() {
-        int selectedRow = propertyTable.getSelectedRow();
+        if(isTenantView) {
+            JOptionPane.showMessageDialog(frame, "Switch to Property view first.");
+            return;
+        }
+        
+        int selectedRow = mainTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(frame, "Select a property first");
             return;
@@ -294,6 +311,7 @@ public class GUI {
     }
 
     private void runPropertyVacancyStatsQuery() throws SQLException {
+        isTenantView = false;
         tableModel.setColumnIdentifiers(new Object[] {
             "PID", "Address", "Price", "Beds", "Occupied", "Vacant"
         });
@@ -313,6 +331,7 @@ public class GUI {
     }
 
     private void runLandlordTenantStatsQuery() throws SQLException {
+        isTenantView = false;
         tableModel.setColumnIdentifiers(new Object[] {
             "LLID", "Landlord Name", "Total Tenants"
         });
@@ -329,6 +348,7 @@ public class GUI {
     }
 
     private void runOverpayingTenantStatsQuery() throws SQLException {
+        isTenantView = true;
         tableModel.setColumnIdentifiers(new Object[] {
             "SSN", "Tenant Name", "PID", "Address", "Beds", "Price", "Rent/Bed"
         });
