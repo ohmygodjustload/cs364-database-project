@@ -15,8 +15,7 @@ public class Property {
     private double bath;
     private boolean petsAllowed;
     private String address;
-    private int currentTenants; // Number of current tenants
-
+    
     // Constructor
     public Property(int PID, int LLID, double price, int bed, double bath, boolean petsAllowed, String address) {
         this.PID = PID;
@@ -26,15 +25,6 @@ public class Property {
         this.bath = bath;
         this.petsAllowed = petsAllowed;
         this.address = address;
-    }
-
-    // Constructor with currentTenants for advanced queries
-    public Property(int PID, String address, double price, int bed, int currentTenants) {
-        this.PID = PID;
-        this.address = address;
-        this.price = price;
-        this.bed = bed;
-        this.currentTenants = currentTenants;
     }
 
     // Overloaded Constructor without PID (for inserts)
@@ -76,10 +66,6 @@ public class Property {
         return address;
     }
 
-    public int getCurrentTenants() {
-        return currentTenants;
-    }
-
     // Setters
     public void setPID(int PID) {
         this.PID = PID;
@@ -109,27 +95,12 @@ public class Property {
         this.address = address;
     }
 
-    public void setCurrentTenants(int currentTenants) {
-        this.currentTenants = currentTenants;
-    }
-
     // To String
     @Override
     public String toString() {
         return "Property{" +
                 "PID=" + PID +
                 ", bed=" + bed +
-                '}';
-    }
-
-    // Another toString for currentTenants
-    public String toStringWithTenants() {
-        return "Property{" +
-                "PID=" + PID +
-                ", Address='" + address + '\'' +
-                ", price=" + price +
-                ", bed=" + bed +
-                ", currentTenants=" + currentTenants +
                 '}';
     }
 }
