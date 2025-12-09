@@ -10,7 +10,6 @@ package gui;
 import dao.LandlordDAO;
 import dao.PropertyDAO;
 import dao.TenantDAO;
-import db.DBConnection;
 import model.Property;
 import model.Tenant;
 // import model.Landlord;
