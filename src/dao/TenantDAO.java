@@ -87,6 +87,8 @@ public class TenantDAO {
         return tenant;
     }
 
+    // TODO - implement advanced query for tenant
+
     /**
      * Insert a new tenant into the database.
      * @param t Tenant object to insert
