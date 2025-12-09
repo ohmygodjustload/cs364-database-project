@@ -11,7 +11,6 @@ public class Landlord {
     private String name;
     private String phoneNum;
     private String email;
-    private int numTenants;
 
     // Constructor
     public Landlord(int LLID, String name, String phoneNum, String email) {
@@ -19,13 +18,6 @@ public class Landlord {
         this.name = name;
         this.phoneNum = phoneNum;
         this.email = email;
-    }
-
-    // Constructor with numTenants
-    public Landlord(int LLID, String name, int numTenants) {
-        this.LLID = LLID;
-        this.name = name;
-        this.numTenants = numTenants;
     }
 
     // Overloaded Constructor without LLID (for inserts)
@@ -53,10 +45,6 @@ public class Landlord {
         return email;
     }
 
-    public int getNumTenants() {
-        return numTenants;
-    }
-
     // Setters
     public void setLLID(int LLID) {
         this.LLID = LLID;
@@ -74,25 +62,12 @@ public class Landlord {
         this.email = email;
     }
 
-    public void setNumTenants(int numTenants) {
-        this.numTenants = numTenants;
-    }
-
     // To String
     @Override
     public String toString() {
         return "Landlord{" +
                 "LLID=" + LLID +
                 ", name='" + name + '\'' +
-                '}';
-    }
-
-    // Another toString for numTenants
-    public String toStringWithTenants() {
-        return "Landlord{" +
-                "LLID=" + LLID +
-                ", name='" + name + '\'' +
-                ", numTenants=" + numTenants +
                 '}';
     }
 }
