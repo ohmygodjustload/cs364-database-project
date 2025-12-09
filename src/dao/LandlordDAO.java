@@ -76,6 +76,11 @@ public class LandlordDAO {
         return landlord;
     }
 
+    /**
+     * Advanced Query: Retrieve landlords with the most tenants.
+     * @return List of Landlord objects with tenant counts
+     * @throws SQLException
+     */
     public List<Landlord> getLandlordsWithMostTenants() throws SQLException {
         String sql = "SELECT l.LLID, l.Name AS LandlordName, COUNT(t.SSN) AS TotalTenants " +
                      "FROM Landlord l " +
