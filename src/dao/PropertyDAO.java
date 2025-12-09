@@ -85,6 +85,35 @@ public class PropertyDAO {
         return property;
     }
 
+    public List<Property> getMostExpensiveProperties() throws SQLException {
+        String sql = "SELECT p.PID, p.Address, p.Price, p.Bed, COUNT(li.SSN) As CurrentOccupancy, (p.bed - COUNT(li.SSN)) AS VacantBeds " +
+                     "FROM Property p " +
+                     "LEFT JOIN LivesIn li ON p.PID = li.PID " +
+                     "GROUP BY p.PID, p.Address, p.Price, p.Bed " +
+                     "HAVING VacantBeds > 0 " +
+                     "ORDER BY p.Price DESC " +
+                     "LIMIT 10";
+
+        List<Property> properties = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                properties.add(new Property(
+                    results.getInt("PID"),
+                    results.getString("Address"),
+                    results.getDouble("Price"),
+                    results.getInt("Bed"),
+                    results.getInt("CurrentOccupancy")
+                ));
+            }
+        }
+
+        return properties;
+    }
+
     /**
      * Retrieve all properties owned by a specific landlord.
      * @param LLID Landlord ID
@@ -206,8 +235,11 @@ public class PropertyDAO {
     // public static void main(String[] args) {
     //     try {
     //         DBConnection.getInstance().connect();
-    //         new PropertyDAO().insertProperty(new Property(47, 1600.0, 4, 2, true, "124 Heck St, Anytown, USA"));
-    //         System.out.println("Inserted property successfully.");
+    //         PropertyDAO propertyDAO = new PropertyDAO();
+    //         List<Property> properties = propertyDAO.getMostExpensiveProperties();
+    //         for (Property p : properties) {
+    //             System.out.println(p.toStringWithTenants());
+    //         }
     //     } catch (SQLException e) {
     //         // TODO Auto-generated catch block
     //         e.printStackTrace();
