@@ -13,7 +13,7 @@ import dao.TenantDAO;
 import db.DBConnection;
 import model.Property;
 import model.Tenant;
-import model.Landlord;
+// import model.Landlord;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -63,15 +63,17 @@ public class GUI {
 
         // Left Button Panel
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayout(5, 1, 10, 10));
+        leftPanel.setLayout(new GridLayout(6, 1, 10, 10));
 
         JButton viewPropertiesButton = new JButton("View All Properties");
+        JButton viewAllTenantsButton = new JButton("View All Tenants");
         JButton addTenantButton = new JButton("Add Tenant");
         JButton updateTenantButton = new JButton("Update Tenant");
         JButton deletePropertyButton = new JButton("Delete Property");
         JButton advancedQueryButton = new JButton("Run Advanced Query");
 
         leftPanel.add(viewPropertiesButton);
+        leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
         leftPanel.add(deletePropertyButton);
@@ -82,9 +84,11 @@ public class GUI {
         // Button Actions
         viewPropertiesButton.addActionListener(e -> loadAllProperties());
 
-        addTenantButton.addActionListener(e -> showAddTenantDialog());
+        viewAllTenantsButton.addActionListener(e -> loadAllTenants());
 
-        updateTenantButton.addActionListener(e -> showUpdateTenantDialog());
+        addTenantButton.addActionListener(e -> runAddTenantDialog());
+
+        updateTenantButton.addActionListener(e -> runUpdateTenantDialog());
 
         deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
 
@@ -95,6 +99,9 @@ public class GUI {
 
     // DAO Calls
     private void loadAllProperties() {
+        tableModel.setColumnIdentifiers(
+            new Object[]{"PID", "Address", "Beds", "Baths", "Price", "Pets"}
+        );
         tableModel.setRowCount(0); // Clear existing rows
 
         List<Property> properties = null;
@@ -116,20 +123,129 @@ public class GUI {
         }
     }
 
-    private void showAddTenantDialog() {
-        JOptionPane.showMessageDialog(frame, 
-            "This will open a form to insert a new tenant.\n(Implement via TenantDAO.insertTenant())",
-            "Add Tenant",
-            JOptionPane.INFORMATION_MESSAGE
+    private void loadAllTenants() {
+        tableModel.setColumnIdentifiers(
+            new Object[]{"SSN", "First Name", "Last Name", "Budget", "Phone", "Email"}
         );
+        tableModel.setRowCount(0); // Clear existing rows
+
+        try {
+            List<Tenant> tenants = tenantDAO.getAllTenants();
+            for (Tenant t : tenants) {
+                tableModel.addRow(new Object[]{
+                    t.getSSN(),
+                    t.getFname(),
+                    t.getLname(),
+                    t.getBudget(),
+                    t.getPhoneNum(),
+                    t.getEmail()
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(frame, "Failed to load tenants: " + e.getMessage());
+        }
     }
 
-    private void showUpdateTenantDialog() {
-        JOptionPane.showMessageDialog(frame, 
-            "This will open a form to update an existing tenant.\n(Implement via TenantDAO.updateTenant())",
-            "Update Tenant",
-            JOptionPane.INFORMATION_MESSAGE
+    private void runAddTenantDialog() {
+        JTextField ssnField = new JTextField();
+        JTextField fNameField = new JTextField();
+        JTextField mNameField = new JTextField();
+        JTextField lNameField = new JTextField();
+        JTextField budgetField = new JTextField();
+        JTextField phoneField = new JTextField();
+        JTextField emailField = new JTextField();
+        JTextField birthDateField = new JTextField("YYYY-MM-DD");
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+        panel.add(new JLabel("SSN:")); panel.add(ssnField);
+        panel.add(new JLabel("First Name:")); panel.add(fNameField);
+        panel.add(new JLabel("Middle Name:")); panel.add(mNameField);
+        panel.add(new JLabel("Last Name:")); panel.add(lNameField);
+        panel.add(new JLabel("Budget:")); panel.add(budgetField);
+        panel.add(new JLabel("Phone Number:")); panel.add(phoneField);
+        panel.add(new JLabel("Email:")); panel.add(emailField);
+        panel.add(new JLabel("Birth Date:")); panel.add(birthDateField);
+
+        int result = JOptionPane.showConfirmDialog(frame, panel, 
+            "Add New Tenant", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
         );
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                Tenant tenant = new Tenant(
+                    ssnField.getText(),
+                    fNameField.getText(),
+                    mNameField.getText(),
+                    lNameField.getText(),
+                    Double.parseDouble(budgetField.getText()),
+                    phoneField.getText(),
+                    emailField.getText(),
+                    java.time.LocalDate.parse(birthDateField.getText())
+                );
+
+                tenantDAO.insertTenant(tenant);
+                JOptionPane.showMessageDialog(frame, "Tenant added successfully.");
+                loadAllTenants();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(frame, "Invalid input:\n" + e.getMessage());
+            }
+        }
+    }
+
+    private void runUpdateTenantDialog() {
+        int selectedRow = propertyTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Select a tenant first");
+            return;
+        }
+
+        String ssn = tableModel.getValueAt(selectedRow, 0).toString();
+
+        try {
+            Tenant t = tenantDAO.getTenantBySSN(ssn);
+
+            JTextField fNameField = new JTextField(t.getFname());
+            JTextField mNameField = new JTextField(t.getMname());
+            JTextField lNameField = new JTextField(t.getLname());
+            JTextField budgetField = new JTextField(String.valueOf(t.getBudget()));
+            JTextField phoneField = new JTextField(t.getPhoneNum());
+            JTextField emailField = new JTextField(t.getEmail());
+            JTextField birthDateField = new JTextField(t.getBirthDate().toString());
+            
+            JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+            panel.add(new JLabel("First Name:")); panel.add(fNameField);
+            panel.add(new JLabel("Middle Name:")); panel.add(mNameField);
+            panel.add(new JLabel("Last Name:")); panel.add(lNameField);
+            panel.add(new JLabel("Budget:")); panel.add(budgetField);
+            panel.add(new JLabel("Phone Number:")); panel.add(phoneField);
+            panel.add(new JLabel("Email:")); panel.add(emailField);
+            panel.add(new JLabel("Birth Date:")); panel.add(birthDateField);
+
+            int result = JOptionPane.showConfirmDialog(frame, panel, 
+                "Update Tenant", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (result == JOptionPane.OK_OPTION) {
+                Tenant updated = new Tenant(
+                    ssn,
+                    fNameField.getText(),
+                    mNameField.getText(),
+                    lNameField.getText(),
+                    Double.parseDouble(budgetField.getText()),
+                    phoneField.getText(),
+                    emailField.getText(),
+                    java.time.LocalDate.parse(birthDateField.getText())
+                );
+
+                tenantDAO.updateTenant(updated);
+                JOptionPane.showMessageDialog(frame, "Tenant updated successfully!");
+                loadAllTenants();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     private void deleteSelectedProperty() {
@@ -149,21 +265,98 @@ public class GUI {
     }
 
     private void runAdvancedQuery() {
-        JOptionPane.showMessageDialog(frame, 
-            "This will call one of the advanced queries and display results in the table.",
-            "Advanced Query",
-            JOptionPane.INFORMATION_MESSAGE
+        String[] options = {
+            "Top 10 Most Expensive Properties (with Vacancy)",
+            "Landlords with Most Tenants",
+            "Tenants Paying Above Average Rent/Bed"
+        };
+
+        int choice = JOptionPane.showOptionDialog(
+            frame,
+            "Select an advanced query to run:",
+            "Advanced Queries",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.INFORMATION_MESSAGE,
+            null,
+            options,
+            options[0]
         );
-    }
 
-    public static void main(String[] args) {
         try {
-            DBConnection.getInstance().connect();
-        } catch (Exception e) {
-            e.printStackTrace();
+            switch (choice) {
+                case 0 -> runPropertyVacancyStatsQuery();
+                case 1 -> runLandlordTenantStatsQuery();
+                case 2 -> runOverpayingTenantStatsQuery();
+                default -> {}
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(frame, "Advanced Query failed: " + e.getMessage());
         }
-
-        SwingUtilities.invokeLater(GUI::new);
     }
+
+    private void runPropertyVacancyStatsQuery() throws SQLException {
+        tableModel.setColumnIdentifiers(new Object[] {
+            "PID", "Address", "Price", "Beds", "Occupied", "Vacant"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = propertyDAO.getMostExpensiveProperties();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getPid(),
+                s.getAddress(),
+                s.getPrice(),
+                s.getBed(),
+                s.getCurrentOccupancy(),
+                s.getVacantBeds()
+            });
+        }
+    }
+
+    private void runLandlordTenantStatsQuery() throws SQLException {
+        tableModel.setColumnIdentifiers(new Object[] {
+            "LLID", "Landlord Name", "Total Tenants"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = landlordDAO.getLandlordsWithMostTenants();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getLlid(),
+                s.getName(),
+                s.getTotalTenants()
+            });
+        }
+    }
+
+    private void runOverpayingTenantStatsQuery() throws SQLException {
+        tableModel.setColumnIdentifiers(new Object[] {
+            "SSN", "Tenant Name", "PID", "Address", "Beds", "Price", "Rent/Bed"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = tenantDAO.getTenantsPayingAboveAverageRent();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getSsn(),
+                s.getTenantName(),
+                s.getPid(),
+                s.getAddress(),
+                s.getBed(),
+                s.getPrice(),
+                s.getRentPerBed()
+            });
+        }
+    }
+
+    // public static void main(String[] args) {
+    //     try {
+    //         DBConnection.getInstance().connect();
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+
+    //     SwingUtilities.invokeLater(GUI::new);
+    // }
 
 }
