@@ -53,6 +53,10 @@ public class Landlord {
         return email;
     }
 
+    public int getNumTenants() {
+        return numTenants;
+    }
+
     // Setters
     public void setLLID(int LLID) {
         this.LLID = LLID;
@@ -68,6 +72,10 @@ public class Landlord {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setNumTenants(int numTenants) {
+        this.numTenants = numTenants;
     }
 
     // To String
