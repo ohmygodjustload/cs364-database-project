@@ -85,6 +85,11 @@ public class PropertyDAO {
         return property;
     }
 
+    /**
+     * Advanced Query: Retrieve the top 10 most expensive properties with at least one vacant bed.
+     * @return List of Property objects
+     * @throws SQLException
+     */
     public List<Property> getMostExpensiveProperties() throws SQLException {
         String sql = "SELECT p.PID, p.Address, p.Price, p.Bed, COUNT(li.SSN) As CurrentOccupancy, (p.bed - COUNT(li.SSN)) AS VacantBeds " +
                      "FROM Property p " +
