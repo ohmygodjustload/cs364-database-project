@@ -76,6 +76,34 @@ public class LandlordDAO {
         return landlord;
     }
 
+    public List<Landlord> getLandlordsWithMostTenants() throws SQLException {
+        String sql = "SELECT l.LLID, l.Name AS LandlordName, COUNT(t.SSN) AS TotalTenants " +
+                     "FROM Landlord l " +
+                     "JOIN Property p ON l.LLID = p.LLID " +
+                     "LEFT JOIN LivesIn li ON p.PID = li.PID " +
+                     "LEFT JOIN Tenant t ON li.SSN = t.SSN " +
+                     "GROUP BY l.LLID, l.Name " +
+                     "HAVING TotalTenants >= 1 " +
+                     "ORDER BY TotalTenants DESC, LandlordName ASC " +
+                     "LIMIT 10";
+        List<Landlord> landlords = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                landlords.add(new Landlord(
+                    results.getInt("LLID"),
+                    results.getString("LandlordName"),
+                    results.getInt("TotalTenants")
+                ));
+            }
+        }
+
+        return landlords;
+    }
+
     /**
      * Insert a new landlord into the database.
      * @param ll Landlord object to insert
@@ -163,18 +191,24 @@ public class LandlordDAO {
         }
     }
 
-    // public static void main(String[] args) {
-    //     try {
-    //         DBConnection.getInstance().connect();
-    //         LandlordDAO landlordDAO = new LandlordDAO();
+    public static void main(String[] args) {
+        try {
+            DBConnection.getInstance().connect();
+            LandlordDAO landlordDAO = new LandlordDAO();
 
-    //         // Example usage: Insert a new landlord
-    //         // Landlord newLandlord = new Landlord("TEST-LANDLORD", "123-555-1234", "alice.smith@example.com");
-    //         // landlordDAO.insertLandlord(newLandlord);
-    //         // landlordDAO.deleteLandlord(47);
-    //         // System.out.println("Deleted landlord successfully.");
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+            // Get most tenants landlords
+            List<Landlord> landlords = landlordDAO.getLandlordsWithMostTenants();
+            for (Landlord ll : landlords) {
+                System.out.println(ll.toStringWithTenants());
+            }
+
+            // Example usage: Insert a new landlord
+            // Landlord newLandlord = new Landlord("TEST-LANDLORD", "123-555-1234", "alice.smith@example.com");
+            // landlordDAO.insertLandlord(newLandlord);
+            // landlordDAO.deleteLandlord(47);
+            // System.out.println("Deleted landlord successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
