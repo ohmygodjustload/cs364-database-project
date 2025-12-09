@@ -6,6 +6,7 @@
  */
 package dao;
 
+import model.dto.PropertyVacancyStats;
 import db.DBConnection;
 import model.Property;
 import java.sql.Connection;
@@ -87,10 +88,10 @@ public class PropertyDAO {
 
     /**
      * Advanced Query: Retrieve the top 10 most expensive properties with at least one vacant bed.
-     * @return List of Property objects
+     * @return List of PropertyVacancyStats objects
      * @throws SQLException
      */
-    public List<Property> getMostExpensiveProperties() throws SQLException {
+    public List<PropertyVacancyStats> getMostExpensiveProperties() throws SQLException {
         String sql = "SELECT p.PID, p.Address, p.Price, p.Bed, COUNT(li.SSN) As CurrentOccupancy, (p.bed - COUNT(li.SSN)) AS VacantBeds " +
                      "FROM Property p " +
                      "LEFT JOIN LivesIn li ON p.PID = li.PID " +
@@ -99,24 +100,25 @@ public class PropertyDAO {
                      "ORDER BY p.Price DESC " +
                      "LIMIT 10";
 
-        List<Property> properties = new ArrayList<>();
+        List<PropertyVacancyStats> stats = new ArrayList<>();
 
         try (
             PreparedStatement stmt = db.getConnection().prepareStatement(sql);
             ResultSet results = stmt.executeQuery();
         ) {
             while (results.next()) {
-                properties.add(new Property(
+                stats.add(new PropertyVacancyStats(
                     results.getInt("PID"),
                     results.getString("Address"),
                     results.getDouble("Price"),
                     results.getInt("Bed"),
-                    results.getInt("CurrentOccupancy")
+                    results.getInt("CurrentOccupancy"),
+                    results.getInt("VacantBeds")
                 ));
             }
         }
 
-        return properties;
+        return stats;
     }
 
     /**

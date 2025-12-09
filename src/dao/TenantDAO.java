@@ -8,6 +8,8 @@ package dao;
 
 import db.DBConnection;
 import model.Tenant;
+import model.dto.OverpayingTenantStats;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -88,6 +90,45 @@ public class TenantDAO {
     }
 
     // TODO - implement advanced query for tenant
+
+    /**
+     * Advanced Query: Retrieve tenants paying above average rent-per-bedroom for their property type.
+     * @return List of Tenant objects
+     * @throws SQLException
+     */
+    public List<OverpayingTenantStats> getTenantsPayingAboveAverageRent() throws SQLException {
+        String sql = "SELECT t.SSN, CONCAT(t.FName, ' ', t.LName) AS TenantName, p.PID, p.Address, p.Bed, p.Price, (p.Price / p.Bed) AS RentPerBed " +
+                     "FROM Tenant t " +
+                     "JOIN LivesIn li ON t.SSN = li.SSN " +
+                     "JOIN Property p ON li.PID = p.PID " +
+                     "WHERE (p.Price / p.Bed) > ( " +
+                     "    SELECT AVG(p2.Price / p2.Bed) " +
+                     "    FROM Property p2 " +
+                     "    WHERE p2.Bed = p.Bed " +
+                     ") " +
+                     "ORDER BY RentPerBed DESC";
+
+        List<OverpayingTenantStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new OverpayingTenantStats(
+                    results.getString("SSN"),
+                    results.getString("TenantName"),
+                    results.getInt("PID"),
+                    results.getString("Address"),
+                    results.getInt("Bed"),
+                    results.getDouble("Price"),
+                    results.getDouble("RentPerBed")
+                ));
+            }
+        }
+        
+        return stats;
+    }
 
     /**
      * Insert a new tenant into the database.
