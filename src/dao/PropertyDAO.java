@@ -2,7 +2,7 @@
  * Data Access Object (DAO) class for Property entities.
  * 
  * @author Andrew Peirce
- * Date Last Modified: December 7, 2025
+ * Date Last Modified: December 9, 2025
  */
 package dao;
 
