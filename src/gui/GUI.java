@@ -10,15 +10,13 @@ package gui;
 import dao.LandlordDAO;
 import dao.PropertyDAO;
 import dao.TenantDAO;
-import model.Property;
-import model.Tenant;
-// import model.Landlord;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import model.Property;
+import model.Tenant;
 
 public class GUI {
 
@@ -259,6 +257,13 @@ public class GUI {
         }
     }
 
+    private void addProperty(){
+        if(isTenantView) {
+            JOptionPane.showMessageDialog(frame, "Switch to Property view first.");
+            return;
+        }
+    }
+
     private void deleteSelectedProperty() {
         if(isTenantView) {
             JOptionPane.showMessageDialog(frame, "Switch to Property view first.");
@@ -279,6 +284,7 @@ public class GUI {
         }
         loadAllProperties();
     }
+
 
     private void runAdvancedQuery() {
         String[] options = {
