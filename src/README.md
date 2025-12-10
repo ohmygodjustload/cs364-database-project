@@ -1,7 +1,11 @@
-Java files go here.
+app/ - Where the main method for the app lives.
 
-Rohan was here.
+dao/ - Data Access Objects. Interact directly with the database.
 
-Andrew was here
+db/ - Contains class that instantiates a connection to the database.
 
-Merge andrew-test -> rohan-test
+gui/ - Contains class that defines a GUI
+
+model/ - Contains POJOs (Plain Old Java Objects) to describe the attributes of a Tenant, Landlord, and Property
+
+util/ - Contains a class that randomly assigns tenants to houses. Used only for populating an empty LivesIn table.

@@ -1,0 +1,3 @@
+db.url=host:port/DBName
+db.user=yourusername
+db.pass=yourpassword
