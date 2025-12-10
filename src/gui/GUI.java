@@ -116,7 +116,7 @@ public class GUI {
     private void loadAllProperties() {
         isTenantView = false;
         tableModel.setColumnIdentifiers(
-            new Object[]{"PID", "Address", "Beds", "Baths", "Price", "Pets"}
+            new Object[]{"PID", "LLID", "Address", "Beds", "Baths", "Price", "Pets"}
         );
         tableModel.setRowCount(0); // Clear existing rows
 
@@ -130,6 +130,7 @@ public class GUI {
         for (Property p : properties) {
             tableModel.addRow(new Object[]{
                 p.getPID(),
+                p.getLLID(),
                 p.getAddress(),
                 p.getBed(),
                 p.getBath(),
