@@ -9,6 +9,7 @@ package dao;
 import db.DBConnection;
 import model.Tenant;
 import model.dto.OverpayingTenantStats;
+import model.dto.TenantBudgetStats;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -127,6 +128,35 @@ public class TenantDAO {
             }
         }
         
+        return stats;
+    }
+
+    public List<TenantBudgetStats> getTenantsWithAboveAverageBudget() throws SQLException {
+        String sql = "SELECT t.FName, t.LName, t.Budget, li.PID " +
+                     "FROM Tenant t JOIN LivesIn li ON t.SSN = li.SSN " +
+                     "WHERE t.Budget > ( " +
+                        "SELECT AVG(t2.Budget) " +
+                            "FROM LivesIn li2 JOIN Tenant t2 ON li2.SSN = t2.SSN " +
+                            "WHERE li2.PID = li.PID) " +
+                     ") " +
+                     "ORDER BY t.Budget DESC";
+
+        List<TenantBudgetStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new TenantBudgetStats(
+                    results.getString("FName"),
+                    results.getString("LName"),
+                    results.getDouble("Budget"),
+                    results.getInt("PID")
+                ));
+            }
+        }
+
         return stats;
     }
 
