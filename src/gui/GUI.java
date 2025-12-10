@@ -64,19 +64,25 @@ public class GUI {
         leftPanel.setLayout(new GridLayout(7, 1, 10, 10));
 
         JButton viewPropertiesButton = new JButton("View All Properties");
+        JButton addPropertyButton = new JButton("Add Property");
+        // TODO - add update property button (Rohan will do this)
+        JButton deletePropertyButton = new JButton("Delete Property");
         JButton viewAllTenantsButton = new JButton("View All Tenants");
         JButton addTenantButton = new JButton("Add Tenant");
         JButton updateTenantButton = new JButton("Update Tenant");
-        JButton addPropertyButton = new JButton("Add Property");
-        JButton deletePropertyButton = new JButton("Delete Property");
+        // TODO - add delete tenant button (Andrew will do this)
+        // TODO - add viewLandlords button (Jacob will do this)
         JButton advancedQueryButton = new JButton("Run Advanced Query");
 
         leftPanel.add(viewPropertiesButton);
+        leftPanel.add(addPropertyButton);
+        // leftPanel.add(updatePropertyButton);
+        leftPanel.add(deletePropertyButton);
         leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
-        leftPanel.add(addPropertyButton);
-        leftPanel.add(deletePropertyButton);
+        // leftPanel.add(deleteTenantButton);
+        // leftPanel.add(viewLandlordsButton);
         leftPanel.add(advancedQueryButton);
         
         frame.add(leftPanel, BorderLayout.WEST);
@@ -84,15 +90,21 @@ public class GUI {
         // Button Actions
         viewPropertiesButton.addActionListener(e -> loadAllProperties());
 
+        addPropertyButton.addActionListener(e -> addProperty());
+
+        // updatePropertyButton.addActionListener(e -> updateProperty());
+
+        deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
+
         viewAllTenantsButton.addActionListener(e -> loadAllTenants());
 
         addTenantButton.addActionListener(e -> runAddTenantDialog());
 
         updateTenantButton.addActionListener(e -> runUpdateTenantDialog());
 
-        addPropertyButton.addActionListener(e -> addProperty());
+        // deleteTenantButton.addActionListener(e -> deleteSelectedTenant());
 
-        deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
+        // viewLandlordsButton.addActionListener(e -> loadAllLandlords());
 
         advancedQueryButton.addActionListener(e -> runAdvancedQuery());
 
