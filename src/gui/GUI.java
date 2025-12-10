@@ -294,7 +294,7 @@ public class GUI {
                     Integer.parseInt(LLIDField.getText()),
                     Double.parseDouble(priceField.getText()),
                     Integer.parseInt(bedField.getText()),
-                    Integer.parseInt(bathField.getText()),
+                    Double.parseDouble(bathField.getText()),
                     Boolean.parseBoolean(petsField.getText()),
                     addressField.getText()
                 );
