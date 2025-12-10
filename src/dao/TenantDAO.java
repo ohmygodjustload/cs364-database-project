@@ -145,7 +145,6 @@ public class TenantDAO {
                         "SELECT AVG(t2.Budget) " +
                             "FROM LivesIn li2 JOIN Tenant t2 ON li2.SSN = t2.SSN " +
                             "WHERE li2.PID = li.PID) " +
-                     ") " +
                      "ORDER BY t.Budget DESC";
 
         List<TenantBudgetStats> stats = new ArrayList<>();
