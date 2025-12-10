@@ -61,7 +61,7 @@ public class GUI {
 
         // Left Button Panel
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayout(6, 1, 10, 10));
+        leftPanel.setLayout(new GridLayout(7, 1, 10, 10));
 
         JButton viewPropertiesButton = new JButton("View All Properties");
         JButton viewAllTenantsButton = new JButton("View All Tenants");
@@ -266,7 +266,7 @@ public class GUI {
             JOptionPane.showMessageDialog(frame, "Switch to Property view first.");
             return;
         }
-        JTextField PIDField = new JTextField();
+        // JTextField PIDField = new JTextField();
         JTextField LLIDField = new JTextField();
         JTextField priceField = new JTextField();
         JTextField bedField = new JTextField();
@@ -275,7 +275,7 @@ public class GUI {
         JTextField addressField = new JTextField();
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
-        panel.add(new JLabel("PID:")); panel.add(PIDField);
+        // panel.add(new JLabel("PID:")); panel.add(PIDField);
         panel.add(new JLabel("LLID:")); panel.add(LLIDField);
         panel.add(new JLabel("Price:")); panel.add(priceField);
         panel.add(new JLabel("Beds:")); panel.add(bedField);
@@ -290,7 +290,7 @@ public class GUI {
         if (result == JOptionPane.OK_OPTION) {
             try {
                 Property property = new Property(
-                    Integer.parseInt(PIDField.getText()),
+                    // Integer.parseInt(PIDField.getText()),
                     Integer.parseInt(LLIDField.getText()),
                     Double.parseDouble(priceField.getText()),
                     Integer.parseInt(bedField.getText()),
