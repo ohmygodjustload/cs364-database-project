@@ -6,9 +6,9 @@
  */
 package app;
 
-import javax.swing.SwingUtilities;
 import db.DBConnection;
 import gui.GUI;
+import javax.swing.SwingUtilities;
 
 public class Driver {
     

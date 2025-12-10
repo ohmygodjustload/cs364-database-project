@@ -67,6 +67,7 @@ public class GUI {
         JButton viewAllTenantsButton = new JButton("View All Tenants");
         JButton addTenantButton = new JButton("Add Tenant");
         JButton updateTenantButton = new JButton("Update Tenant");
+        JButton addPropertyButton = new JButton("Add Property");
         JButton deletePropertyButton = new JButton("Delete Property");
         JButton advancedQueryButton = new JButton("Run Advanced Query");
 
@@ -74,6 +75,7 @@ public class GUI {
         leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
+        leftPanel.add(addPropertyButton);
         leftPanel.add(deletePropertyButton);
         leftPanel.add(advancedQueryButton);
         
@@ -87,6 +89,8 @@ public class GUI {
         addTenantButton.addActionListener(e -> runAddTenantDialog());
 
         updateTenantButton.addActionListener(e -> runUpdateTenantDialog());
+
+        addPropertyButton.addActionListener(e -> addProperty());
 
         deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
 
@@ -261,6 +265,46 @@ public class GUI {
         if(isTenantView) {
             JOptionPane.showMessageDialog(frame, "Switch to Property view first.");
             return;
+        }
+        JTextField PIDField = new JTextField();
+        JTextField LLIDField = new JTextField();
+        JTextField priceField = new JTextField();
+        JTextField bedField = new JTextField();
+        JTextField bathField = new JTextField();
+        JTextField petsField = new JTextField();
+        JTextField addressField = new JTextField();
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+        panel.add(new JLabel("PID:")); panel.add(PIDField);
+        panel.add(new JLabel("LLID:")); panel.add(LLIDField);
+        panel.add(new JLabel("Price:")); panel.add(priceField);
+        panel.add(new JLabel("Beds:")); panel.add(bedField);
+        panel.add(new JLabel("Baths:")); panel.add(bathField);
+        panel.add(new JLabel("Pets Allowed:")); panel.add(petsField);
+        panel.add(new JLabel("Address:")); panel.add(addressField);
+
+        int result = JOptionPane.showConfirmDialog(frame, panel, 
+            "Add New Property", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                Property property = new Property(
+                    Integer.parseInt(PIDField.getText()),
+                    Integer.parseInt(LLIDField.getText()),
+                    Double.parseDouble(priceField.getText()),
+                    Integer.parseInt(bedField.getText()),
+                    Integer.parseInt(bathField.getText()),
+                    Boolean.parseBoolean(petsField.getText()),
+                    addressField.getText()
+                );
+
+                propertyDAO.insertProperty(property);
+                JOptionPane.showMessageDialog(frame, "Property added successfully.");
+                loadAllProperties();
+            } catch ( Exception e) {
+                JOptionPane.showMessageDialog(frame, "Invalid input:\n" + e.getMessage());
+            }
         }
     }
 
