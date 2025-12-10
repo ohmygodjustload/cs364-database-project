@@ -8,6 +8,7 @@ package dao;
 
 import db.DBConnection;
 import model.Landlord;
+import model.dto.LandlordPropertyStats;
 import model.dto.LandlordTenantStats;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -107,6 +108,39 @@ public class LandlordDAO {
             }
         }
 
+        return stats;
+    }
+
+    /**
+     * Advanced Query: Retrieve landlords with more than 3 available properties.
+     * (Written by Jacob Rogers, integrated by Andrew Peirce)
+     * 
+     * @return List of LandlordPropertyStats objects
+     * @throws SQLException
+     */
+    public List<LandlordPropertyStats> getLandlordsWithAvailableProperties() throws SQLException {
+        String sql = "SELECT l.LLID, l.Name, l.Email, COUNT(p.PID) AS AvailableProperties " +
+                     "FROM Landlord l " +
+                     "JOIN Property AS p ON l.LLID = p.LLID " +
+                     "LEFT JOIN LivesIn AS li ON p.PID = li.PID " +
+                     "WHERE li.PID IS NULL " +
+                     "GROUP BY l.LLID, l.Name, l.Email " +
+                     "HAVING COUNT(p.PID) > 3; ";
+        List<LandlordPropertyStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new LandlordPropertyStats(
+                    results.getInt("LLID"),
+                    results.getString("Name"),
+                    results.getString("Email"),
+                    results.getInt("AvailableProperties")
+                ));
+            }
+        }
         return stats;
     }
 
