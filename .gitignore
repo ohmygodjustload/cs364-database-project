@@ -32,8 +32,25 @@ replay_pid*
 .vs/
 .vscode/
 
-# Tmp files
+# IntelliJ
+out/
+.idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/
+
+# Tmp and test files
 **/tmp
+*Test.java
+*test.java
+*.tmp
 
 # Sensitive login info
 config/db.properties
+
+# SQL junk
+*.bak
+*.mwb

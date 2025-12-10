@@ -3,6 +3,8 @@
  * @author Andrew Peirce
  * Date Last Modified: December 1, 2025
  */ 
+package model;
+
 import java.time.LocalDate;
 
 public class Tenant {

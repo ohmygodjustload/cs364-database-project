@@ -3,6 +3,8 @@
  * @author Andrew Peirce
  * Date Last Modified: December 1, 2025
  */
+package model;
+
 public class Landlord {
     // Attributes
     private int LLID; // Primary Key
@@ -13,6 +15,14 @@ public class Landlord {
     // Constructor
     public Landlord(int LLID, String name, String phoneNum, String email) {
         this.LLID = LLID;
+        this.name = name;
+        this.phoneNum = phoneNum;
+        this.email = email;
+    }
+
+    // Overloaded Constructor without LLID (for inserts)
+    public Landlord(String name, String phoneNum, String email) {
+        // this.LLID = LLID;
         this.name = name;
         this.phoneNum = phoneNum;
         this.email = email;

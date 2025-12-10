@@ -4,6 +4,8 @@
  * @author Andrew Peirce
  * Date Last Modified: December 1, 2025
  */
+package model;
+
 public class Property {
     // Attributes
     private int PID; // Primary Key
@@ -13,9 +15,20 @@ public class Property {
     private double bath;
     private boolean petsAllowed;
     private String address;
-
+    
+    // Constructor
     public Property(int PID, int LLID, double price, int bed, double bath, boolean petsAllowed, String address) {
         this.PID = PID;
+        this.LLID = LLID;
+        this.price = price;
+        this.bed = bed;
+        this.bath = bath;
+        this.petsAllowed = petsAllowed;
+        this.address = address;
+    }
+
+    // Overloaded Constructor without PID (for inserts)
+    public Property(int LLID, double price, int bed, double bath, boolean petsAllowed, String address) {
         this.LLID = LLID;
         this.price = price;
         this.bed = bed;
