@@ -112,6 +112,7 @@ public class GUI {
         updatePropertyButton.addActionListener(e -> updateProperty());
 
         deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
+        
         viewAllLandlordsButton.addActionListener(e -> loadAllLandlords());
 
         advancedQueryButton.addActionListener(e -> runAdvancedQuery());
