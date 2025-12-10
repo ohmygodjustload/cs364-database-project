@@ -62,7 +62,7 @@ public class GUI {
 
         // Left Button Panel
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayout(7, 1, 10, 10));
+        leftPanel.setLayout(new GridLayout(10, 1, 10, 10));
 
         JButton viewPropertiesButton = new JButton("View All Properties");
         JButton addPropertyButton = new JButton("Add Property");
@@ -71,8 +71,8 @@ public class GUI {
         JButton viewAllTenantsButton = new JButton("View All Tenants");
         JButton addTenantButton = new JButton("Add Tenant");
         JButton updateTenantButton = new JButton("Update Tenant");
-        // TODO - add delete tenant button (Andrew will do this)
-        // TODO - add viewLandlords button (Jacob will do this)
+        JButton deleteTenantButton = new JButton("Delete Tenant");
+        JButton viewAllLandlordsButton = new JButton("View All Landlords");
         JButton advancedQueryButton = new JButton("Run Advanced Query");
 
         leftPanel.add(viewPropertiesButton);
@@ -82,8 +82,8 @@ public class GUI {
         leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
-        // leftPanel.add(deleteTenantButton);
-        // leftPanel.add(viewLandlordsButton);
+        leftPanel.add(deleteTenantButton);
+        leftPanel.add(viewAllLandlordsButton);
         leftPanel.add(advancedQueryButton);
         
         frame.add(leftPanel, BorderLayout.WEST);
