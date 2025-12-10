@@ -13,7 +13,6 @@ import dao.TenantDAO;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
-import javax.annotation.processing.Completion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import model.Landlord;
@@ -78,14 +77,11 @@ public class GUI {
 
         leftPanel.add(viewPropertiesButton);
         leftPanel.add(addPropertyButton);
-        // leftPanel.add(updatePropertyButton);
+        leftPanel.add(updatePropertyButton);
         leftPanel.add(deletePropertyButton);
         leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
-        leftPanel.add(addPropertyButton);
-        leftPanel.add(updatePropertyButton);
-        leftPanel.add(deletePropertyButton);
         leftPanel.add(deleteTenantButton);
         leftPanel.add(viewAllLandlordsButton);
         leftPanel.add(advancedQueryButton);
