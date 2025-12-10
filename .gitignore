@@ -32,6 +32,16 @@ replay_pid*
 .vs/
 .vscode/
 
+# IntelliJ
+out/
+.idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/
+
 # Tmp and test files
 **/tmp
 *Test.java
