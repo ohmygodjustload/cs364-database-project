@@ -17,7 +17,7 @@ SELECT ll.LLID, ll.Name, COUNT(t.SSN) AS TotalTenants
         LEFT JOIN Tenant t ON li.SSN = t.SSN
     GROUP BY ll.LLID, ll.Name
     HAVING COUNT(t.SSN) > 2
-    ORDER BY TotalTenants DESC;
+    ORDER BY TotalTenants DESC
     LIMIT 20
     OFFSET 5;
 
