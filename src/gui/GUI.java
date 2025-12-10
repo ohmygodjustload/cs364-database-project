@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import model.Landlord;
 import model.Property;
 import model.Tenant;
 
@@ -61,7 +62,7 @@ public class GUI {
 
         // Left Button Panel
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayout(10, 1, 10, 10));
+        leftPanel.setLayout(new GridLayout(7, 1, 10, 10));
 
         JButton viewPropertiesButton = new JButton("View All Properties");
         JButton addPropertyButton = new JButton("Add Property");
@@ -71,7 +72,6 @@ public class GUI {
         JButton addTenantButton = new JButton("Add Tenant");
         JButton updateTenantButton = new JButton("Update Tenant");
         // TODO - add delete tenant button (Andrew will do this)
-        JButton deleteTenantButton = new JButton("Delete Tenant");
         // TODO - add viewLandlords button (Jacob will do this)
         JButton advancedQueryButton = new JButton("Run Advanced Query");
 
@@ -82,7 +82,7 @@ public class GUI {
         leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
-        leftPanel.add(deleteTenantButton);
+        // leftPanel.add(deleteTenantButton);
         // leftPanel.add(viewLandlordsButton);
         leftPanel.add(advancedQueryButton);
         
@@ -105,7 +105,7 @@ public class GUI {
 
         deleteTenantButton.addActionListener(e -> deleteSelectedTenant());
 
-        // viewLandlordsButton.addActionListener(e -> loadAllLandlords());
+        viewAllLandlordsButton.addActionListener(e -> loadAllLandlords());
 
         advancedQueryButton.addActionListener(e -> runAdvancedQuery());
 
@@ -160,6 +160,27 @@ public class GUI {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(frame, "Failed to load tenants: " + e.getMessage());
+        }
+    }
+
+    private void loadAllLandlords() {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(
+            new Object[]{"LLID", "Name", "PhoneNum", "Email"}
+        );
+        tableModel.setRowCount(0);
+        try {
+            List<Landlord> landlords = landlordDAO.getAllLandlords();
+            for(Landlord l : landlords) {
+                tableModel.addRow(new Object[]{
+                    l.getLLID(),
+                    l.getName(),
+                    l.getPhoneNum(),
+                    l.getEmail()
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(frame, "Failed to load landlords: " + e.getMessage());
         }
     }
 
