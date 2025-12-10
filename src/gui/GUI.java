@@ -13,6 +13,7 @@ import dao.TenantDAO;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
+import javax.annotation.processing.Completion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import model.Landlord;
@@ -66,7 +67,7 @@ public class GUI {
 
         JButton viewPropertiesButton = new JButton("View All Properties");
         JButton addPropertyButton = new JButton("Add Property");
-        // TODO - add update property button (Rohan will do this)
+        JButton updatePropertyButton = new JButton("Update Property");
         JButton deletePropertyButton = new JButton("Delete Property");
         JButton viewAllTenantsButton = new JButton("View All Tenants");
         JButton addTenantButton = new JButton("Add Tenant");
@@ -82,6 +83,9 @@ public class GUI {
         leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
+        leftPanel.add(addPropertyButton);
+        leftPanel.add(updatePropertyButton);
+        leftPanel.add(deletePropertyButton);
         leftPanel.add(deleteTenantButton);
         leftPanel.add(viewAllLandlordsButton);
         leftPanel.add(advancedQueryButton);
@@ -105,6 +109,9 @@ public class GUI {
 
         deleteTenantButton.addActionListener(e -> deleteSelectedTenant());
 
+        updatePropertyButton.addActionListener(e -> updateProperty());
+
+        deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
         viewAllLandlordsButton.addActionListener(e -> loadAllLandlords());
 
         advancedQueryButton.addActionListener(e -> runAdvancedQuery());
@@ -363,6 +370,66 @@ public class GUI {
             }
         }
     }
+
+    private void updateProperty(){
+        if (isTenantView) {
+            JOptionPane.showMessageDialog(frame, "Switch to Property view first.");
+            return;
+        }
+
+        int selectedRow = mainTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Select a property first");
+            return;
+        }
+
+        String pid = tableModel.getValueAt(selectedRow,0).toString();
+
+        try {
+            Property p = propertyDAO.getPropertyByID(Integer.parseInt(pid));
+
+            JTextField LLIDField = new JTextField(String.valueOf(p.getLLID()));
+            JTextField priceField = new JTextField(String.valueOf(p.getPrice()));
+            JTextField bedField = new JTextField(String.valueOf(p.getBed()));
+            JTextField bathField = new JTextField(String.valueOf(p.getBath()));
+            JTextField petsField = new JTextField(String.valueOf(p.isPetsAllowed()));
+            JTextField addressField = new JTextField(p.getAddress());
+
+            JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+            panel.add(new JLabel("LLID:")); panel.add(LLIDField);
+            panel.add(new JLabel("Price:")); panel.add(priceField);
+            panel.add(new JLabel("Beds:")); panel.add(bedField);
+            panel.add(new JLabel("Baths:")); panel.add(bathField);
+            panel.add(new JLabel("Pets Allowed:")); panel.add(petsField);
+            panel.add(new JLabel("Address:")); panel.add(addressField);
+
+            int result = JOptionPane.showConfirmDialog(frame, panel, 
+                "Update Property", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (result == JOptionPane.OK_OPTION) {
+                Property updated = new Property(
+                    Integer.parseInt(pid),
+                    Integer.parseInt(LLIDField.getText()),
+                    Double.parseDouble(priceField.getText()),
+                    Integer.parseInt(bedField.getText()),
+                    Double.parseDouble(bathField.getText()),
+                    Boolean.parseBoolean(petsField.getText()),
+                    addressField.getText()
+                );
+
+                propertyDAO.updateProperty(updated);
+                JOptionPane.showMessageDialog(frame, "Property updated successfully!");
+                loadAllProperties();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+
+
 
     private void deleteSelectedProperty() {
         if(isTenantView) {
