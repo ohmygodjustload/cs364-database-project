@@ -93,8 +93,6 @@ public class GUI {
 
         addPropertyButton.addActionListener(e -> addProperty());
 
-        // updatePropertyButton.addActionListener(e -> updateProperty());
-
         deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
 
         viewAllTenantsButton.addActionListener(e -> loadAllTenants());
@@ -452,9 +450,9 @@ public class GUI {
 
     private void runAdvancedQuery() {
         String[] options = {
-            "Top 10 Most Expensive Properties (with Vacancy)",
+            "Top 10 Most Expensive Properties with vacancy",
             "Landlords with Most Tenants",
-            "Tenants Paying Above Average Rent/Bed"
+            "Tenants with budgets above the average of their roommates"
         };
 
         int choice = JOptionPane.showOptionDialog(
@@ -471,12 +469,47 @@ public class GUI {
         try {
             switch (choice) {
                 case 0 -> runPropertyVacancyStatsQuery();
-                case 1 -> runLandlordTenantStatsQuery();
-                case 2 -> runOverpayingTenantStatsQuery();
+                case 1 -> runLandlordPropertyStatsQuery();
+                case 2 -> runTenantBudgetStatsQuery();
                 default -> {}
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(frame, "Advanced Query failed: " + e.getMessage());
+        }
+    }
+
+    private void runTenantBudgetStatsQuery() throws SQLException {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(new Object[] {
+            "First Name", "Last Name", "Budget", "PID"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = tenantDAO.getTenantsWithAboveAverageBudget();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getFName(),
+                s.getLName(),
+                s.getBudget(),
+                s.getPid()
+            });
+        }
+    }
+    private void runLandlordPropertyStatsQuery() throws SQLException {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(new Object[] {
+            "LLID", "Name", "Email", "Available Properties"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = landlordDAO.getLandlordsWithAvailableProperties();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getLlid(),
+                s.getName(),
+                s.getEmail(),
+                s.getAvailableProperties()
+            });
         }
     }
 
@@ -500,43 +533,43 @@ public class GUI {
         }
     }
 
-    private void runLandlordTenantStatsQuery() throws SQLException {
-        isTenantView = false;
-        tableModel.setColumnIdentifiers(new Object[] {
-            "LLID", "Landlord Name", "Total Tenants"
-        });
-        tableModel.setRowCount(0); // Clear existing rows
+    // private void runLandlordTenantStatsQuery() throws SQLException {
+    //     isTenantView = false;
+    //     tableModel.setColumnIdentifiers(new Object[] {
+    //         "LLID", "Landlord Name", "Total Tenants"
+    //     });
+    //     tableModel.setRowCount(0); // Clear existing rows
 
-        var stats = landlordDAO.getLandlordsWithMostTenants();
-        for (var s : stats) {
-            tableModel.addRow(new Object[] {
-                s.getLlid(),
-                s.getName(),
-                s.getTotalTenants()
-            });
-        }
-    }
+    //     var stats = landlordDAO.getLandlordsWithMostTenants();
+    //     for (var s : stats) {
+    //         tableModel.addRow(new Object[] {
+    //             s.getLlid(),
+    //             s.getName(),
+    //             s.getTotalTenants()
+    //         });
+    //     }
+    // }
 
-    private void runOverpayingTenantStatsQuery() throws SQLException {
-        isTenantView = true;
-        tableModel.setColumnIdentifiers(new Object[] {
-            "SSN", "Tenant Name", "PID", "Address", "Beds", "Price", "Rent/Bed"
-        });
-        tableModel.setRowCount(0); // Clear existing rows
+    // private void runOverpayingTenantStatsQuery() throws SQLException {
+    //     isTenantView = true;
+    //     tableModel.setColumnIdentifiers(new Object[] {
+    //         "SSN", "Tenant Name", "PID", "Address", "Beds", "Price", "Rent/Bed"
+    //     });
+    //     tableModel.setRowCount(0); // Clear existing rows
 
-        var stats = tenantDAO.getTenantsPayingAboveAverageRent();
-        for (var s : stats) {
-            tableModel.addRow(new Object[] {
-                s.getSsn(),
-                s.getTenantName(),
-                s.getPid(),
-                s.getAddress(),
-                s.getBed(),
-                s.getPrice(),
-                s.getRentPerBed()
-            });
-        }
-    }
+    //     var stats = tenantDAO.getTenantsPayingAboveAverageRent();
+    //     for (var s : stats) {
+    //         tableModel.addRow(new Object[] {
+    //             s.getSsn(),
+    //             s.getTenantName(),
+    //             s.getPid(),
+    //             s.getAddress(),
+    //             s.getBed(),
+    //             s.getPrice(),
+    //             s.getRentPerBed()
+    //         });
+    //     }
+    // }
 
     // public static void main(String[] args) {
     //     try {

@@ -131,6 +131,13 @@ public class TenantDAO {
         return stats;
     }
 
+    /**
+     * Advanced Query: Retrieve tenants with budgets above the average budget for their properties.
+     * (Written by Rohan Hari, integrated by Andrew Peirce)
+     * 
+     * @return List of TenantBudgetStats objects
+     * @throws SQLException
+     */
     public List<TenantBudgetStats> getTenantsWithAboveAverageBudget() throws SQLException {
         String sql = "SELECT t.FName, t.LName, t.Budget, li.PID " +
                      "FROM Tenant t JOIN LivesIn li ON t.SSN = li.SSN " +
