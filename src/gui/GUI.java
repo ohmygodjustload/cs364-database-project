@@ -61,7 +61,7 @@ public class GUI {
 
         // Left Button Panel
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayout(7, 1, 10, 10));
+        leftPanel.setLayout(new GridLayout(10, 1, 10, 10));
 
         JButton viewPropertiesButton = new JButton("View All Properties");
         JButton addPropertyButton = new JButton("Add Property");
@@ -71,6 +71,7 @@ public class GUI {
         JButton addTenantButton = new JButton("Add Tenant");
         JButton updateTenantButton = new JButton("Update Tenant");
         // TODO - add delete tenant button (Andrew will do this)
+        JButton deleteTenantButton = new JButton("Delete Tenant");
         // TODO - add viewLandlords button (Jacob will do this)
         JButton advancedQueryButton = new JButton("Run Advanced Query");
 
@@ -81,7 +82,7 @@ public class GUI {
         leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
-        // leftPanel.add(deleteTenantButton);
+        leftPanel.add(deleteTenantButton);
         // leftPanel.add(viewLandlordsButton);
         leftPanel.add(advancedQueryButton);
         
@@ -102,7 +103,7 @@ public class GUI {
 
         updateTenantButton.addActionListener(e -> runUpdateTenantDialog());
 
-        // deleteTenantButton.addActionListener(e -> deleteSelectedTenant());
+        deleteTenantButton.addActionListener(e -> deleteSelectedTenant());
 
         // viewLandlordsButton.addActionListener(e -> loadAllLandlords());
 
@@ -271,6 +272,27 @@ public class GUI {
             e.printStackTrace();
             return;
         }
+    }
+
+    private void deleteSelectedTenant() {
+        if (!isTenantView) {
+            JOptionPane.showMessageDialog(frame, "Switch to Tenant view first.");
+            return;
+        }
+
+        int selectedRow = mainTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Select a tenant first");
+            return;
+        }
+
+        String ssn = (String) tableModel.getValueAt(selectedRow, 0);
+        try {
+            tenantDAO.deleteTenant(ssn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        loadAllTenants();
     }
 
     private void addProperty(){
