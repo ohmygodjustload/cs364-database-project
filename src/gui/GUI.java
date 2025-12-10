@@ -54,7 +54,7 @@ public class GUI {
 
         // Center Table
         tableModel = new DefaultTableModel(
-            new Object[]{"PID", "Address", "Beds", "Baths", "Price", "Pets"}, 0
+            new Object[]{"PID", "LLID", "Address", "Beds", "Baths", "Price", "Pets"}, 0
         );
         mainTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(mainTable);
@@ -450,9 +450,9 @@ public class GUI {
 
     private void runAdvancedQuery() {
         String[] options = {
-            "Top 10 Most Expensive Properties with vacancy",
-            "Landlords with Most Tenants",
-            "Tenants with budgets above the average of their roommates"
+            "Top 10 Most Expensive Properties with vacancy (Andrew)",
+            "Landlords with available properties (Jacob)",
+            "Tenants with budgets above the average of their roommates (Rohan)"
         };
 
         int choice = JOptionPane.showOptionDialog(
