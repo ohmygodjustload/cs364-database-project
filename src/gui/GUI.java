@@ -16,6 +16,7 @@ import java.util.List;
 import javax.annotation.processing.Completion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import model.Landlord;
 import model.Property;
 import model.Tenant;
 
@@ -62,24 +63,31 @@ public class GUI {
 
         // Left Button Panel
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayout(7, 1, 10, 10));
+        leftPanel.setLayout(new GridLayout(10, 1, 10, 10));
 
         JButton viewPropertiesButton = new JButton("View All Properties");
-        JButton viewAllTenantsButton = new JButton("View All Tenants");
-        JButton addTenantButton = new JButton("Add Tenant");
-        JButton updateTenantButton = new JButton("Update Tenant");
         JButton addPropertyButton = new JButton("Add Property");
         JButton updatePropertyButton = new JButton("Update Property");
         JButton deletePropertyButton = new JButton("Delete Property");
+        JButton viewAllTenantsButton = new JButton("View All Tenants");
+        JButton addTenantButton = new JButton("Add Tenant");
+        JButton updateTenantButton = new JButton("Update Tenant");
+        JButton deleteTenantButton = new JButton("Delete Tenant");
+        JButton viewAllLandlordsButton = new JButton("View All Landlords");
         JButton advancedQueryButton = new JButton("Run Advanced Query");
 
         leftPanel.add(viewPropertiesButton);
+        leftPanel.add(addPropertyButton);
+        // leftPanel.add(updatePropertyButton);
+        leftPanel.add(deletePropertyButton);
         leftPanel.add(viewAllTenantsButton);
         leftPanel.add(addTenantButton);
         leftPanel.add(updateTenantButton);
         leftPanel.add(addPropertyButton);
         leftPanel.add(updatePropertyButton);
         leftPanel.add(deletePropertyButton);
+        leftPanel.add(deleteTenantButton);
+        leftPanel.add(viewAllLandlordsButton);
         leftPanel.add(advancedQueryButton);
         
         frame.add(leftPanel, BorderLayout.WEST);
@@ -87,17 +95,24 @@ public class GUI {
         // Button Actions
         viewPropertiesButton.addActionListener(e -> loadAllProperties());
 
+        addPropertyButton.addActionListener(e -> addProperty());
+
+        // updatePropertyButton.addActionListener(e -> updateProperty());
+
+        deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
+
         viewAllTenantsButton.addActionListener(e -> loadAllTenants());
 
         addTenantButton.addActionListener(e -> runAddTenantDialog());
 
         updateTenantButton.addActionListener(e -> runUpdateTenantDialog());
 
-        addPropertyButton.addActionListener(e -> addProperty());
+        deleteTenantButton.addActionListener(e -> deleteSelectedTenant());
 
         updatePropertyButton.addActionListener(e -> updateProperty());
 
         deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
+        viewAllLandlordsButton.addActionListener(e -> loadAllLandlords());
 
         advancedQueryButton.addActionListener(e -> runAdvancedQuery());
 
@@ -108,7 +123,7 @@ public class GUI {
     private void loadAllProperties() {
         isTenantView = false;
         tableModel.setColumnIdentifiers(
-            new Object[]{"PID", "Address", "Beds", "Baths", "Price", "Pets"}
+            new Object[]{"PID", "LLID", "Address", "Beds", "Baths", "Price", "Pets"}
         );
         tableModel.setRowCount(0); // Clear existing rows
 
@@ -122,6 +137,7 @@ public class GUI {
         for (Property p : properties) {
             tableModel.addRow(new Object[]{
                 p.getPID(),
+                p.getLLID(),
                 p.getAddress(),
                 p.getBed(),
                 p.getBath(),
@@ -152,6 +168,27 @@ public class GUI {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(frame, "Failed to load tenants: " + e.getMessage());
+        }
+    }
+
+    private void loadAllLandlords() {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(
+            new Object[]{"LLID", "Name", "PhoneNum", "Email"}
+        );
+        tableModel.setRowCount(0);
+        try {
+            List<Landlord> landlords = landlordDAO.getAllLandlords();
+            for(Landlord l : landlords) {
+                tableModel.addRow(new Object[]{
+                    l.getLLID(),
+                    l.getName(),
+                    l.getPhoneNum(),
+                    l.getEmail()
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(frame, "Failed to load landlords: " + e.getMessage());
         }
     }
 
@@ -264,6 +301,27 @@ public class GUI {
             e.printStackTrace();
             return;
         }
+    }
+
+    private void deleteSelectedTenant() {
+        if (!isTenantView) {
+            JOptionPane.showMessageDialog(frame, "Switch to Tenant view first.");
+            return;
+        }
+
+        int selectedRow = mainTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Select a tenant first");
+            return;
+        }
+
+        String ssn = (String) tableModel.getValueAt(selectedRow, 0);
+        try {
+            tenantDAO.deleteTenant(ssn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        loadAllTenants();
     }
 
     private void addProperty(){
