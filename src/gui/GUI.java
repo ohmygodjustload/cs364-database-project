@@ -456,7 +456,7 @@ public class GUI {
             "Top 10 Properties with 'St' in the address by number of tenants (Rohan)",
             "Landlords with 3 or more available properties (Jacob)",
             "First 20 Landlords with Properties with More than 2 Tenants (Offset 5) (Rohan)",
-            "Number of Tenants Each Landlord has Ordered by Number of Tenants (Jacob)",
+            "Landlords and their properties with bed and bath counts (Jacob)",
             "Tenants with budgets above the average of their roommates (Rohan)",
             "Tenants paying above average rent-per-bedroom for their property type (Andrew)"
         };
@@ -491,7 +491,7 @@ public class GUI {
                 case 3 -> runPropertiesWStInAddressByTenantsQuery();
                 case 4 -> runLandlordPropertyStatsQuery();
                 case 5 -> runFirst20LandlordsWithMoreThan2TenantsQuery();
-                case 6 -> runNumTenantsPerLandlordQuery();
+                case 6 -> runLandlordBedBathStatsQuery();
                 case 7 -> runTenantBudgetStatsQuery();
                 case 8 -> runOverpayingTenantsQuery();
                 default -> {}
@@ -502,24 +502,26 @@ public class GUI {
     }
 
     /**
-     * Advanced Query: Retrieve number of tenants each landlord has, ordered by number of tenants.
+     * Advanced Query: Retrieve landlords and their properties with bed and bath counts.
      * (Written by Jacob Rogers, integrated by Andrew Peirce)
      * 
      * @throws SQLException
      */
-    private void runNumTenantsPerLandlordQuery() throws SQLException {
+    public void runLandlordBedBathStatsQuery() throws SQLException {
         isTenantView = false;
         tableModel.setColumnIdentifiers(new Object[] {
-            "LLID", "Name", "Total Tenants"
+            "LLID", "Name", "Bed Count", "Bath Count", "Property Count"
         });
         tableModel.setRowCount(0); // Clear existing rows
 
-        var stats = landlordDAO.getLandlordTenantsNoOffset();
+        var stats = landlordDAO.getLandlordBedBathStats();
         for (var s : stats) {
             tableModel.addRow(new Object[] {
                 s.getLlid(),
                 s.getName(),
-                s.getTotalTenants()
+                s.getBedCount(),
+                s.getBathCount(),
+                s.getPropertyCount()
             });
         }
     }

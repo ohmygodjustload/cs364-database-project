@@ -8,6 +8,7 @@ package dao;
 
 import db.DBConnection;
 import model.Landlord;
+import model.dto.LandlordBedBathStats;
 import model.dto.LandlordPropertyStats;
 import model.dto.LandlordTenantStats;
 import java.sql.Connection;
@@ -184,6 +185,41 @@ public class LandlordDAO {
     }
 
     /**
+     * Advanced Query: Retrieve landlords and their properties with bed and bath counts.
+     * (Written by Jacob Rogers, integrated by Andrew Peirce)
+     * 
+     * @return List of LandlordBedBathStats objects
+     * @throws SQLException
+     */
+    public List<LandlordBedBathStats> getLandlordBedBathStats() throws SQLException {
+        String sql = "SELECT l.LLID AS LandlordID, l.Name AS LandlordName, p.Bed, p.Bath, COUNT(*) AS PropertyCount " +
+                     "FROM Landlord AS l JOIN Property AS p ON l.LLID = p.LLID " +
+                     "GROUP BY l.LLID, l.Name, p.Bed, p.Bath " +
+                     "ORDER BY l.LLID, PropertyCount DESC";
+
+        List<LandlordBedBathStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new LandlordBedBathStats(
+                    results.getInt("LandlordID"),
+                    results.getString("LandlordName"),
+                    results.getInt("Bed"),
+                    results.getDouble("Bath"),
+                    results.getInt("PropertyCount")
+                ));
+            }
+        }
+
+        return stats;
+    }
+
+    /**
+     * DEPRECATED: This method is similar to getLandlordTenantStats(). Use that instead.
+     * 
      * Advanced Query: Retrieve landlords along with their tenant counts without offset. Inclusive of all landlords.
      * (Written by Jacob Rogers, integrated by Andrew Peirce)
      * 
