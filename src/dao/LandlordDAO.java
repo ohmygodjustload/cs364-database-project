@@ -79,20 +79,59 @@ public class LandlordDAO {
     }
 
     /**
+     * DEPRECATED: This method is too similar to getLandlordTenantStats().
+     * Used previously as an advanced query example.
      * Advanced Query: Retrieve landlords with the most tenants.
      * @return List of Landlord objects with tenant counts
      * @throws SQLException
      */
-    public List<LandlordTenantStats> getLandlordsWithMostTenants() throws SQLException {
-        String sql = "SELECT l.LLID, l.Name AS LandlordName, COUNT(t.SSN) AS TotalTenants " +
-                     "FROM Landlord l " +
-                     "JOIN Property p ON l.LLID = p.LLID " +
+    // public L)ist<LandlordTenantStats> getLandlordsWithMostTenants() throws SQLException {
+    //     String sql = "SELECT l.LLID, l.Name AS LandlordName, COUNT(t.SSN) AS TotalTenants " +
+    //                  "FROM Landlord l " +
+    //                  "JOIN Property p ON l.LLID = p.LLID " +
+    //                  "LEFT JOIN LivesIn li ON p.PID = li.PID " +
+    //                  "LEFT JOIN Tenant t ON li.SSN = t.SSN " +
+    //                  "GROUP BY l.LLID, l.Name " +
+    //                  "HAVING TotalTenants >= 1 " +
+    //                  "ORDER BY TotalTenants DESC, LandlordName ASC " +
+    //                  "LIMIT 10";
+    //     List<LandlordTenantStats> stats = new ArrayList<>();
+
+    //     try (
+    //         PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+    //         ResultSet results = stmt.executeQuery();
+    //     ) {
+    //         while (results.next()) {
+    //             stats.add(new LandlordTenantStats(
+    //                 results.getInt("LLID"),
+    //                 results.getString("LandlordName"),
+    //                 results.getInt("TotalTenants")
+    //             ));
+    //         }
+    //     }
+
+    //     return stats;
+    // }
+
+    /**
+     * Advanced Query: Find first 20 landlords with properties that have more than 2 tenants.
+     * Offset by 5 because the first 5 are outliers with extremely high tenant counts.
+     * (Written by Rohan Hari, integrated by Andrew Peirce)
+     * 
+     * @return List of LandlordTenantStats objects
+     * @throws SQLException
+     */
+    public List<LandlordTenantStats> getLandlordTenantStats() throws SQLException {
+        String sql = "SELECT ll.LLID, ll.Name, COUNT(t.SSN) AS TotalTenants " +
+                     "FROM Landlord ll LEFT JOIN Property p ON ll.LLID = p.LLID " +
                      "LEFT JOIN LivesIn li ON p.PID = li.PID " +
                      "LEFT JOIN Tenant t ON li.SSN = t.SSN " +
-                     "GROUP BY l.LLID, l.Name " +
-                     "HAVING TotalTenants >= 1 " +
-                     "ORDER BY TotalTenants DESC, LandlordName ASC " +
-                     "LIMIT 10";
+                     "GROUP BY ll.LLID, ll.Name " +
+                     "HAVING COUNT(t.SSN) > 2 " +
+                     "ORDER BY TotalTenants DESC " +
+                     "LIMIT 20 " +
+                     "OFFSET 5";
+
         List<LandlordTenantStats> stats = new ArrayList<>();
 
         try (
@@ -102,7 +141,7 @@ public class LandlordDAO {
             while (results.next()) {
                 stats.add(new LandlordTenantStats(
                     results.getInt("LLID"),
-                    results.getString("LandlordName"),
+                    results.getString("Name"),
                     results.getInt("TotalTenants")
                 ));
             }
@@ -125,7 +164,7 @@ public class LandlordDAO {
                      "LEFT JOIN LivesIn AS li ON p.PID = li.PID " +
                      "WHERE li.PID IS NULL " +
                      "GROUP BY l.LLID, l.Name, l.Email " +
-                     "HAVING COUNT(p.PID) > 3; ";
+                     "HAVING COUNT(p.PID) > 3";
         List<LandlordPropertyStats> stats = new ArrayList<>();
 
         try (
@@ -141,6 +180,39 @@ public class LandlordDAO {
                 ));
             }
         }
+        return stats;
+    }
+
+    /**
+     * Advanced Query: Retrieve landlords along with their tenant counts without offset. Inclusive of all landlords.
+     * (Written by Jacob Rogers, integrated by Andrew Peirce)
+     * 
+     * @return List of LandlordTenantStats objects
+     * @throws SQLException
+     */
+    public List<LandlordTenantStats> getLandlordTenantsNoOffset() throws SQLException {
+        String sql = "SELECT l.LLID, l.Name AS LandlordName, COUNT(t.SSN) AS NumTenants " +
+                     "FROM Landlord AS l JOIN Property AS p ON l.LLID = p.LLID " +
+                     "JOIN LivesIn AS li ON p.PID = li.PID " +
+                     "JOIN Tenant AS t ON li.SSN = t.SSN " +
+                     "GROUP BY l.LLID, l.Name " +
+                     "ORDER BY NumTenants DESC";
+
+        List<LandlordTenantStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new LandlordTenantStats(
+                    results.getInt("LLID"),
+                    results.getString("LandlordName"),
+                    results.getInt("NumTenants")
+                ));
+            }
+        }
+
         return stats;
     }
 

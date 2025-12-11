@@ -90,8 +90,6 @@ public class TenantDAO {
         return tenant;
     }
 
-    // TODO - implement advanced query for tenant
-
     /**
      * Advanced Query: Retrieve tenants paying above average rent-per-bedroom for their property type.
      * @return List of Tenant objects
