@@ -92,6 +92,8 @@ public class TenantDAO {
 
     /**
      * Advanced Query: Retrieve tenants paying above average rent-per-bedroom for their property type.
+     * (Written and integrated by Andrew Peirce)
+     * 
      * @return List of Tenant objects
      * @throws SQLException
      */

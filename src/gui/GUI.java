@@ -93,6 +93,8 @@ public class GUI {
 
         addPropertyButton.addActionListener(e -> addProperty());
 
+        updatePropertyButton.addActionListener(e -> updateProperty());
+
         deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
 
         viewAllTenantsButton.addActionListener(e -> loadAllTenants());
@@ -102,10 +104,6 @@ public class GUI {
         updateTenantButton.addActionListener(e -> runUpdateTenantDialog());
 
         deleteTenantButton.addActionListener(e -> deleteSelectedTenant());
-
-        updatePropertyButton.addActionListener(e -> updateProperty());
-
-        deletePropertyButton.addActionListener(e -> deleteSelectedProperty());
         
         viewAllLandlordsButton.addActionListener(e -> loadAllLandlords());
 
@@ -313,6 +311,7 @@ public class GUI {
         String ssn = (String) tableModel.getValueAt(selectedRow, 0);
         try {
             tenantDAO.deleteTenant(ssn);
+            JOptionPane.showMessageDialog(frame, "Tenant deleted successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -437,10 +436,11 @@ public class GUI {
             JOptionPane.showMessageDialog(frame, "Select a property first");
             return;
         }
-
+        System.out.println("Selected Row: " + selectedRow); // Debugging line
         int pid = (int) tableModel.getValueAt(selectedRow, 0);
         try {
             propertyDAO.deleteProperty(pid);
+            JOptionPane.showMessageDialog(frame, "Property deleted successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -451,26 +451,49 @@ public class GUI {
     private void runAdvancedQuery() {
         String[] options = {
             "Top 10 Most Expensive Properties with vacancy (Andrew)",
+            "Top 50 cheapest properties above offset with vacancy (Andrew)",
+            "Properties whose rent is higher than that landlord's average (Jacob)",
+            "Top 10 Properties with 'St' in the address by number of tenants (Rohan)",
             "Landlords with available properties (Jacob)",
-            "Tenants with budgets above the average of their roommates (Rohan)"
+            "First 20 Landlords with Properties with More than 2 Tenants (Offset 5) (Rohan)",
+            "Landlords with more than 3 Available Properties (Jacob)",
+            "Tenants with budgets above the average of their roommates (Rohan)",
+            "Tenants paying above average rent-per-bedroom for their property type (Andrew)"
         };
+        
+        // int choice = JOptionPane.showOptionDialog(
+        //     frame,
+        //     "Select an advanced query to run:",
+        //     "Advanced Queries",
+        //     JOptionPane.DEFAULT_OPTION,
+        //     JOptionPane.INFORMATION_MESSAGE,
+        //     null,
+        //     options,
+        //     options[0]
+        // );
 
-        int choice = JOptionPane.showOptionDialog(
+        // use a dropdown instead of buttons
+        String choiceStr = (String) JOptionPane.showInputDialog(
             frame,
             "Select an advanced query to run:",
             "Advanced Queries",
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.INFORMATION_MESSAGE,
+            JOptionPane.PLAIN_MESSAGE,
             null,
             options,
             options[0]
         );
 
         try {
-            switch (choice) {
+            switch (choiceStr != null ? java.util.Arrays.asList(options).indexOf(choiceStr) : -1) {
                 case 0 -> runPropertyVacancyStatsQuery();
                 case 1 -> runLandlordPropertyStatsQuery();
                 case 2 -> runTenantBudgetStatsQuery();
+                case 3 -> {} // Placeholder for future queries
+                case 4 -> {} // Placeholder for future queries
+                case 5 -> {} // Placeholder for future queries
+                case 6 -> {} // Placeholder for future queries
+                case 7 -> {} // Placeholder for future queries
+                case 8 -> {} // Placeholder for future queries
                 default -> {}
             }
         } catch (SQLException e) {
