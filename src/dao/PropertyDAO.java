@@ -6,6 +6,7 @@
  */
 package dao;
 
+import model.dto.PropertyTenantStats;
 import model.dto.PropertyVacancyStats;
 import db.DBConnection;
 import model.Property;
@@ -118,6 +119,79 @@ public class PropertyDAO {
             }
         }
 
+        return stats;
+    }
+
+    /**
+     * Advanced Query: Retrieve the 50 cheapest properties with at least one vacant bed.
+     * Offset the first 3 cheapest properties because they might be too good to be true.
+     * 
+     * @return List of PropertyVacancyStats objects
+     * @throws SQLException
+     */
+    public List<PropertyVacancyStats> getCheapestProperties() throws SQLException {
+        String sql = "SELECT p.PID, p.Address, ROUND((p.Price / p.Bed), 2) AS PricePerBed, p.Bed, COUNT(li.SSN) AS CurrentOccupancy, (p.Bed - COUNT(li.SSN)) AS VacantBeds, l.Name AS LandlordName " +
+                     "FROM Property AS p LEFT JOIN LivesIn AS li ON p.PID = li.PID " +
+                     "LEFT JOIN Tenant AS t ON li.SSN = t.SSN " +
+                     "LEFT JOIN Landlord AS l ON p.LLID = l.LLID " +
+                     "GROUP BY p.PID, p.Address, p.price, p.Bed, l.Name " +
+                     "HAVING VacantBeds > 0 " +
+                     "ORDER BY PricePerBed ASC " +
+                     "LIMIT 50 " +
+                     "OFFSET 3";
+
+        List<PropertyVacancyStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new PropertyVacancyStats(
+                    results.getInt("PID"),
+                    results.getString("Address"),
+                    results.getDouble("PricePerBed"),
+                    results.getInt("Bed"),
+                    results.getInt("CurrentOccupancy"),
+                    results.getInt("VacantBeds"),
+                    results.getString("LandlordName")
+                ));
+            }
+        }
+
+        return stats;
+    }
+
+    /**
+     * Advanced Query: Retrieve the top 10 properties with 'St' in the address by number of tenants.
+     * (Written by Rohan Hari, integrated by Andrew Peirce)
+     * 
+     * @return List of PropertyTenantStats objects
+     * @throws SQLException
+     */
+    public List<PropertyTenantStats> getPropertyTenantStats() throws SQLException {
+        String sql = "SELECT p.PID, p.Address, COUNT(l.SSN) AS NumTenants " +
+                     "FROM Property p JOIN LivesIn l ON p.PID = l.PID " +
+                     "WHERE p.Address LIKE '%St%' " +
+                     "GROUP BY p.PID, p.Address " +
+                     "ORDER BY NumTenants DESC " +
+                     "LIMIT 10";
+
+        List<PropertyTenantStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new PropertyTenantStats(
+                    results.getInt("PID"),
+                    results.getString("Address"),
+                    results.getInt("NumTenants")
+                ));
+            }
+        }
+        
         return stats;
     }
 
