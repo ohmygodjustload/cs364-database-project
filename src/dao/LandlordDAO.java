@@ -122,7 +122,7 @@ public class LandlordDAO {
      * @throws SQLException
      */
     public List<LandlordTenantStats> getLandlordTenantStats() throws SQLException {
-        String sql = "ll.LLID, ll.Name, COUNT(t.SSN) AS TotalTenants " +
+        String sql = "SELECT ll.LLID, ll.Name, COUNT(t.SSN) AS TotalTenants " +
                      "FROM Landlord ll LEFT JOIN Property p ON ll.LLID = p.LLID " +
                      "LEFT JOIN LivesIn li ON p.PID = li.PID " +
                      "LEFT JOIN Tenant t ON li.SSN = t.SSN " +
@@ -180,6 +180,39 @@ public class LandlordDAO {
                 ));
             }
         }
+        return stats;
+    }
+
+    /**
+     * Advanced Query: Retrieve landlords along with their tenant counts without offset. Inclusive of all landlords.
+     * (Written by Jacob Rogers, integrated by Andrew Peirce)
+     * 
+     * @return List of LandlordTenantStats objects
+     * @throws SQLException
+     */
+    public List<LandlordTenantStats> getLandlordTenantsNoOffset() throws SQLException {
+        String sql = "SELECT l.LLID, l.Name AS LandlordName, COUNT(t.SSN) AS NumTenants " +
+                     "FROM Landlord AS l JOIN Property AS p ON l.LLID = p.LLID " +
+                     "JOIN LivesIn AS li ON p.PID = li.PID " +
+                     "JOIN Tenant AS t ON li.SSN = t.SSN " +
+                     "GROUP BY l.LLID, l.Name " +
+                     "ORDER BY NumTenants DESC";
+
+        List<LandlordTenantStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new LandlordTenantStats(
+                    results.getInt("LLID"),
+                    results.getString("LandlordName"),
+                    results.getInt("NumTenants")
+                ));
+            }
+        }
+
         return stats;
     }
 

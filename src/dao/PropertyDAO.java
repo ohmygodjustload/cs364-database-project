@@ -6,6 +6,7 @@
  */
 package dao;
 
+import model.dto.PropertyLandlordStats;
 import model.dto.PropertyTenantStats;
 import model.dto.PropertyVacancyStats;
 import db.DBConnection;
@@ -89,6 +90,8 @@ public class PropertyDAO {
 
     /**
      * Advanced Query: Retrieve the top 10 most expensive properties with at least one vacant bed.
+     * (Written and integrated by Andrew Peirce)
+     * 
      * @return List of PropertyVacancyStats objects
      * @throws SQLException
      */
@@ -125,6 +128,7 @@ public class PropertyDAO {
     /**
      * Advanced Query: Retrieve the 50 cheapest properties with at least one vacant bed.
      * Offset the first 3 cheapest properties because they might be too good to be true.
+     * (Written and integrated by Andrew Peirce)
      * 
      * @return List of PropertyVacancyStats objects
      * @throws SQLException
@@ -192,6 +196,40 @@ public class PropertyDAO {
             }
         }
         
+        return stats;
+    }
+
+    /**
+     * Advanced Query: Retrieve properties whose rent is higher than that landlord's average.
+     * (Written by Jacob Rogers, integrated by Andrew Peirce)
+     * 
+     * @return List of PropertyLandlordStats objects
+     * @throws SQLException
+     */
+    public List<PropertyLandlordStats> getPropertiesAboveLandlordAverage() throws SQLException {
+        String sql = "SELECT p.PID, p.Address, p.Price, l.LLID, l.Name AS LandlordName " +
+                     "FROM Property AS p JOIN Landlord AS l ON p.LLID = l.LLID " +
+                     "WHERE p.Price > (SELECT AVG(p2.Price) " +
+                        "FROM Property AS p2 " +
+                        "WHERE p2.LLID = p.LLID)";
+
+        List<PropertyLandlordStats> stats = new ArrayList<>();
+
+        try (
+            PreparedStatement stmt = db.getConnection().prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+        ) {
+            while (results.next()) {
+                stats.add(new PropertyLandlordStats(
+                    results.getInt("PID"),
+                    results.getString("Address"),
+                    results.getDouble("Price"),
+                    results.getInt("LLID"),
+                    results.getString("LandlordName")
+                ));
+            }
+        }
+
         return stats;
     }
 
