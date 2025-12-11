@@ -47,6 +47,7 @@ target/
 *Test.java
 *test.java
 *.tmp
+tmp*
 
 # Sensitive login info
 config/db.properties
