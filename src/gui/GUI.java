@@ -454,9 +454,9 @@ public class GUI {
             "Top 50 cheapest properties above offset with vacancy (Andrew)",
             "Properties whose rent is higher than that landlord's average (Jacob)",
             "Top 10 Properties with 'St' in the address by number of tenants (Rohan)",
-            "Landlords with available properties (Jacob)",
+            "Landlords with 3 or more available properties (Jacob)",
             "First 20 Landlords with Properties with More than 2 Tenants (Offset 5) (Rohan)",
-            "Landlords with more than 3 Available Properties (Jacob)",
+            "Number of Tenants Each Landlord has Ordered by Number of Tenants (Jacob)",
             "Tenants with budgets above the average of their roommates (Rohan)",
             "Tenants paying above average rent-per-bedroom for their property type (Andrew)"
         };
@@ -486,14 +486,14 @@ public class GUI {
         try {
             switch (choiceStr != null ? java.util.Arrays.asList(options).indexOf(choiceStr) : -1) {
                 case 0 -> runPropertyVacancyStatsQuery();
-                case 1 -> runLandlordPropertyStatsQuery();
-                case 2 -> runTenantBudgetStatsQuery();
-                case 3 -> {} // Placeholder for future queries
-                case 4 -> {} // Placeholder for future queries
-                case 5 -> {} // Placeholder for future queries
-                case 6 -> {} // Placeholder for future queries
-                case 7 -> {} // Placeholder for future queries
-                case 8 -> {} // Placeholder for future queries
+                case 1 -> runCheapestPropertiesAboveOffsetQuery();
+                case 2 -> runPropertiesRentHigherThanLandlordAverageQuery();
+                case 3 -> runPropertiesWStInAddressByTenantsQuery();
+                case 4 -> runLandlordPropertyStatsQuery();
+                case 5 -> runFirst20LandlordsWithMoreThan2TenantsQuery();
+                case 6 -> runNumTenantsPerLandlordQuery();
+                case 7 -> runTenantBudgetStatsQuery();
+                case 8 -> runOverpayingTenantsQuery();
                 default -> {}
             }
         } catch (SQLException e) {
@@ -501,6 +501,160 @@ public class GUI {
         }
     }
 
+    /**
+     * Advanced Query: Retrieve number of tenants each landlord has, ordered by number of tenants.
+     * (Written by Jacob Rogers, integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
+    private void runNumTenantsPerLandlordQuery() throws SQLException {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(new Object[] {
+            "LLID", "Name", "Total Tenants"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = landlordDAO.getLandlordTenantsNoOffset();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getLlid(),
+                s.getName(),
+                s.getTotalTenants()
+            });
+        }
+    }
+
+    /**
+     * Advanced Query: Retrieve the 50 cheapest properties with at least one vacant bed.
+     * Offset the first 3 cheapest properties because they might be too good to be true.
+     * (Written and integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
+    private void runCheapestPropertiesAboveOffsetQuery() throws SQLException {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(new Object[] {
+            "PID", "Address", "Price", "Beds", "Current Occupancy", "Vacant Beds"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = propertyDAO.getCheapestProperties();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getPid(),
+                s.getAddress(),
+                s.getPrice(),
+                s.getBed(),
+                s.getCurrentOccupancy(),
+                s.getVacantBeds()
+            });
+        }
+    }
+
+    /**
+     * Advanced Query: Retrieve properties whose rent is higher than that landlord's average.
+     * (Written by Jacob Rogers, integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
+    private void runPropertiesRentHigherThanLandlordAverageQuery() throws SQLException {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(new Object[] {
+            "PID", "Address", "Price", "LLID", "Landlord Name"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = propertyDAO.getPropertiesAboveLandlordAverage();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getPid(),
+                s.getAddress(),
+                s.getPrice(),
+                s.getLlid(),
+                s.getLandlordName()
+            });
+        }
+    }
+
+    /**
+     * Advanced Query: Retrieve properties with 'St' in the address by number of tenants.
+     * (Written by Rohan Hari, integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
+    private void runPropertiesWStInAddressByTenantsQuery() throws SQLException {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(new Object[] {
+            "PID", "Address", "Total Tenants"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = propertyDAO.getPropertyTenantStats();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getPid(),
+                s.getAddress(),
+                s.getNumTenants()
+            });
+        }
+    }
+
+    /**
+     * Advanced Query: Retrieve first 20 landlords with properties having more than 2 tenants (offset 5).
+     * (Written by Rohan Hari, integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
+    private void runFirst20LandlordsWithMoreThan2TenantsQuery() throws SQLException {
+        isTenantView = false;
+        tableModel.setColumnIdentifiers(new Object[] {
+            "LLID", "Name", "Total Tenants"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = landlordDAO.getLandlordTenantStats();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getLlid(),
+                s.getName(),
+                s.getTotalTenants()
+            });
+        }
+    }
+
+    /**
+     * Advanced Query: Retrieve tenants paying above average rent-per-bedroom for their property type.
+     * (Written and integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
+    private void runOverpayingTenantsQuery() throws SQLException {
+        isTenantView = true;
+        tableModel.setColumnIdentifiers(new Object[] {
+            "SSN", "Tenant Name", "PID", "Address", "Beds", "Price", "Rent/Bed"
+        });
+        tableModel.setRowCount(0); // Clear existing rows
+
+        var stats = tenantDAO.getTenantsPayingAboveAverageRent();
+        for (var s : stats) {
+            tableModel.addRow(new Object[] {
+                s.getSsn(),
+                s.getTenantName(),
+                s.getPid(),
+                s.getAddress(),
+                s.getBed(),
+                s.getPrice(),
+                s.getRentPerBed()
+            });
+        }
+    }
+
+    /**
+     * Advanced Query: Retrieve tenants with budgets above the average budget for their properties.
+     * (Written by Rohan Hari, integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
     private void runTenantBudgetStatsQuery() throws SQLException {
         isTenantView = false;
         tableModel.setColumnIdentifiers(new Object[] {
@@ -518,6 +672,13 @@ public class GUI {
             });
         }
     }
+
+    /**
+     * Advanced Query: Retrieve landlords with available properties.
+     * (Written by Jacob Rogers, integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
     private void runLandlordPropertyStatsQuery() throws SQLException {
         isTenantView = false;
         tableModel.setColumnIdentifiers(new Object[] {
@@ -536,6 +697,12 @@ public class GUI {
         }
     }
 
+    /**
+     * Advanced Query: Retrieve the top 10 most expensive properties with at least one vacant bed.
+     * (Written and integrated by Andrew Peirce)
+     * 
+     * @throws SQLException
+     */
     private void runPropertyVacancyStatsQuery() throws SQLException {
         isTenantView = false;
         tableModel.setColumnIdentifiers(new Object[] {
@@ -573,26 +740,6 @@ public class GUI {
     //     }
     // }
 
-    // private void runOverpayingTenantStatsQuery() throws SQLException {
-    //     isTenantView = true;
-    //     tableModel.setColumnIdentifiers(new Object[] {
-    //         "SSN", "Tenant Name", "PID", "Address", "Beds", "Price", "Rent/Bed"
-    //     });
-    //     tableModel.setRowCount(0); // Clear existing rows
-
-    //     var stats = tenantDAO.getTenantsPayingAboveAverageRent();
-    //     for (var s : stats) {
-    //         tableModel.addRow(new Object[] {
-    //             s.getSsn(),
-    //             s.getTenantName(),
-    //             s.getPid(),
-    //             s.getAddress(),
-    //             s.getBed(),
-    //             s.getPrice(),
-    //             s.getRentPerBed()
-    //         });
-    //     }
-    // }
 
     // public static void main(String[] args) {
     //     try {
